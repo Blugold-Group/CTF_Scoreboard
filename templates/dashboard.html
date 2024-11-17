@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bug Bounties</title>
+    <title>Blugold Group</title>
 </head>
 <body>
-    <h1>All Bug Bounties</h1>
-    <a href="{{ url_for('add_bounty') }}">Add New Bug Bounty</a>
+    <h1>Blugold Group</h1>
 
     <h2>Open Bounties</h2>
     <table border="1">
@@ -44,41 +43,19 @@
             {% endfor %}
         </tbody>
     </table>
+    <a href="{{ url_for('bounties') }}">See All Bounties</a>
 
-    <h2>Closed Bounties</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Prize</th>
-                <th>Completed By</th>
-                <th>Completion Dates</th>
-                {% if is_admin %}
-                <th>Actions</th>
-                {% endif %}  
-            </tr>
-        </thead>
-        <tbody>
-            {% for bounty in bounties %}
-                {% if bounty.status == 'closed' %}
-                <tr>
-                    <td>{{ bounty.title }}</td>
-                    <td>{{ bounty.description }}</td>
-                    <td>{{ bounty.status }}</td>
-                    <td>{{ bounty.prize }}</td>
-                    <td>{{ bounty.completed_by }}</td>
-                    <td>{{ bounty.completion_dates }}</td>
-                    {% if is_admin %}    
-                    <td>
-                        <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
-                    </td>
-                    {% endif %}  
-                </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <h2>Open CTFs</h2>
+    {% for ctf in open_ctfs %}
+    <div class="ctf open-ctf">
+        <div class="ctf-header">
+            <a href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+        </div>
+        <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
+        <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
+    </div>
+    {% endfor %}
+    <a href="{{ url_for('list_ctfs') }}">See All CTFs</a>
+
 </body>
 </html>

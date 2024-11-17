@@ -15,6 +15,11 @@
         {% endfor %}
     </ul>
     <br>
+
+    {% if is_admin %}
+    <a href="{{ url_for('edit_ctf', ctf_id=ctf_id) }}">Edit CTF</a>
+    {% endif %}  
+
     <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
 </body>
 </html>

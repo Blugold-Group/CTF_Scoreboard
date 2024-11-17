@@ -247,10 +247,32 @@ def add_user():
 
     return render_template("add_user.html")
 
+# Shows a preview of all of open bounties and ctfs
 @app.route("/dashboard")
-@login_required
+@app.route("/")
 def dashboard():
-    return render_template("admin.html", user=current_user)
+
+    current_date = datetime.now().strftime('%Y-%m-%d')  # Get today's date
+
+    # Fetch all CTFs along with the number of challenges and their status (open/closed)
+    ctfs = query_db('''
+    SELECT c.id, c.name, c.start_date, c.end_date, 
+           (SELECT COUNT(*) FROM challenge WHERE ctf_id = c.id) AS challenge_count
+    FROM ctf c
+    ORDER BY c.end_date >= ?, c.end_date DESC
+    ''', (current_date,))
+
+    # Separate CTFs into open and closed
+    open_ctfs = [ctf for ctf in ctfs if ctf['end_date'] >= current_date]
+
+    bounties = query_db("SELECT * FROM bug_bounties ORDER BY status, id DESC")
+
+    is_admin = False
+    if current_user.is_authenticated:
+        is_admin = current_user.is_admin
+
+
+    return render_template("dashboard.html", open_ctfs=open_ctfs, bounties=bounties, is_admin=is_admin)
 
 @app.route("/logout")
 @login_required
@@ -337,7 +359,11 @@ def list_ctfs():
     open_ctfs = [ctf for ctf in ctfs if ctf['end_date'] >= current_date]
     closed_ctfs = [ctf for ctf in ctfs if ctf['end_date'] < current_date]
 
-    return render_template('list_ctfs.html', open_ctfs=open_ctfs, closed_ctfs=closed_ctfs)
+    is_admin = False
+    if current_user.is_authenticated:
+        is_admin = current_user.is_admin
+
+    return render_template('list_ctfs.html', open_ctfs=open_ctfs, closed_ctfs=closed_ctfs, is_admin=is_admin)
 
 # Route to create a new CTF
 @app.route('/create_ctf', methods=['GET', 'POST'])
@@ -359,7 +385,7 @@ def create_ctf():
         ''', (name, start_date, end_date))
 
         flash('CTF created successfully!', 'success')
-        return redirect(url_for('ctf'))
+        return redirect(url_for('list_ctfs'))
 
     return render_template('create_ctf.html')
 
@@ -393,7 +419,12 @@ def edit_ctf(ctf_id):
 @app.route('/ctf/<int:ctf_id>')
 def view_ctf(ctf_id):
     challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
-    return render_template('view_ctf.html', challenges=challenges, ctf_id=ctf_id)
+
+    is_admin = False
+    if current_user.is_authenticated:
+        is_admin = current_user.is_admin
+
+    return render_template('view_ctf.html', challenges=challenges, ctf_id=ctf_id, is_admin=is_admin)
 
 # Route to add a new challenge to a specific CTF
 @app.route('/add_challenge/<int:ctf_id>', methods=['GET', 'POST'])
@@ -446,7 +477,12 @@ def edit_challenge(challenge_id):
 @app.route('/bounty')
 def bounties():
     bounties = query_db("SELECT * FROM bug_bounties ORDER BY status, id DESC")
-    return render_template('bounties.html', bounties=bounties)
+
+    is_admin = False
+    if current_user.is_authenticated:
+        is_admin = current_user.is_admin
+
+    return render_template('bounties.html', bounties=bounties, is_admin=is_admin)
 
 # Route to add a new bug bounty
 @app.route('/add_bounty', methods=['GET', 'POST'])

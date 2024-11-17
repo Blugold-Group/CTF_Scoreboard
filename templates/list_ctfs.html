@@ -57,6 +57,10 @@
         <div class="ctf-status">This CTF is closed</div>
     </div>
     {% endfor %}
+
+    {% if is_admin %}
+    <a href="{{ url_for('create_ctf')}}">Add a CTF</a>
+    {% endif %}  
     
 </body>
 </html>
