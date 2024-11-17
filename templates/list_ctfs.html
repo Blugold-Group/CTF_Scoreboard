@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All CTFs</title>
+    <style>
+        .ctf {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .open-ctf {
+            background-color: #d4f8d4; /* Light green for open CTF */
+        }
+        .closed-ctf {
+            background-color: #f8d4d4; /* Light red for closed CTF */
+            text-decoration: line-through;
+        }
+        .ctf-header {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .ctf-status {
+            font-size: 0.9em;
+            color: #888;
+        }
+        .challenge-count {
+            font-size: 0.9em;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>All CTFs</h1>
+
+    <h2>Open CTFs</h2>
+    {% for ctf in open_ctfs %}
+    <div class="ctf open-ctf">
+        <div class="ctf-header">
+            <a href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+        </div>
+        <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
+        <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
+    </div>
+    {% endfor %}
+
+    <h2>Closed CTFs</h2>
+    {% for ctf in closed_ctfs %}
+    <div class="ctf closed-ctf">
+        <div class="ctf-header">
+            <a href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+        </div>
+        <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
+        <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
+        <div class="ctf-status">This CTF is closed</div>
+    </div>
+    {% endfor %}
+    
+</body>
+</html>

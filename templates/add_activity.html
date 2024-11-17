@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Activity</title>
+</head>
+<body>
+    <h1>Add Activity</h1>
+    <form method="POST">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <br>
+        <label for="lock_permissions">Lock Permissions:</label>
+        <input type="text" name="lock_permissions" id="lock_permissions" required>
+        <br>
+        <label for="is_admin">Is this user an admin?:</label>
+        <input type="checkbox" name="is_admin" id="is_admin">
+        <br>
+        <button type="submit">Add User</button>
+    </form>
+    <br>
+    <a href="{{ url_for('admin_dashboard') }}">Back to Admin Dashboard</a>
+</body>
+</html>

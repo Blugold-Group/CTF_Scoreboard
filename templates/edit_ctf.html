@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit CTF</title>
+</head>
+<body>
+    <h1>Edit CTF</h1>
+    <form method="POST">
+        <label for="name">CTF Name:</label><br>
+        <input type="text" id="name" name="name" value="{{ ctf['name'] }}" required><br><br>
+        
+        <label for="start_date">Start Date:</label><br>
+        <input type="date" id="start_date" name="start_date" value="{{ ctf['start_date'] }}" required><br><br>
+
+        <label for="end_date">End Date:</label><br>
+        <input type="date" id="end_date" name="end_date" value="{{ ctf['end_date'] }}" required><br><br>
+
+        <button type="submit">Update CTF</button>
+    </form>
+    <br>
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>
