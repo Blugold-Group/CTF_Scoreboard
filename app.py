@@ -96,6 +96,18 @@ def init_db():
         )
         ''')              
 
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS bug_bounties (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            status TEXT CHECK(status IN ('open', 'closed')) NOT NULL,
+            prize TEXT NOT NULL,
+            completed_by TEXT,  -- Comma-separated list of users who completed the bounty
+            completion_dates TEXT  -- Comma-separated list of timestamps
+        );
+        """)
+
         conn.commit()
 
 # Set up the user loader for Flask-Login
@@ -141,14 +153,12 @@ def add_ctf(name, start_date, end_date):
     VALUES (?, ?, ?)
     ''', (name, start_date, end_date))
 
-
 # Function to add a challenge to a CTF
 def add_challenge(ctf_id, name, description, points):
     query_db('''
     INSERT INTO challenge (ctf_id, name, description, points)
     VALUES (?, ?, ?, ?)
     ''', (ctf_id, name, description, points))
-
 
 # Function to record a user's challenge completion
 def complete_challenge(user_id, challenge_id):
@@ -159,7 +169,6 @@ def complete_challenge(user_id, challenge_id):
     VALUES (?, ?, ?)
     ''', (user_id, challenge_id, completion_date))
 
-
 # Function to get challenges completed by a specific user
 def get_user_completions(user_id):
     return query_db('''
@@ -169,7 +178,6 @@ def get_user_completions(user_id):
     WHERE ch.user_id = ?
     ''', (user_id,))
 
-
 # Function to get all challenges in a specific CTF
 def get_ctf_challenges(ctf_id):
     return query_db('''
@@ -177,8 +185,6 @@ def get_ctf_challenges(ctf_id):
     FROM challenge
     WHERE ctf_id = ?
     ''', (ctf_id,))
-
-
 
 # Routes
 @app.route("/login", methods=["GET", "POST"])
@@ -333,7 +339,6 @@ def list_ctfs():
 
     return render_template('list_ctfs.html', open_ctfs=open_ctfs, closed_ctfs=closed_ctfs)
 
-
 # Route to create a new CTF
 @app.route('/create_ctf', methods=['GET', 'POST'])
 def create_ctf():
@@ -357,7 +362,6 @@ def create_ctf():
         return redirect(url_for('ctf'))
 
     return render_template('create_ctf.html')
-
 
 # Route to edit an existing CTF
 @app.route('/edit_ctf/<int:ctf_id>', methods=['GET', 'POST'])
@@ -385,13 +389,11 @@ def edit_ctf(ctf_id):
 
     return render_template('edit_ctf.html', ctf=ctf)
 
-
 # Route to display challenges for a specific CTF
 @app.route('/ctf/<int:ctf_id>')
 def view_ctf(ctf_id):
     challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
     return render_template('view_ctf.html', challenges=challenges, ctf_id=ctf_id)
-
 
 # Route to add a new challenge to a specific CTF
 @app.route('/add_challenge/<int:ctf_id>', methods=['GET', 'POST'])
@@ -439,7 +441,62 @@ def edit_challenge(challenge_id):
 
     return render_template('edit_challenge.html', challenge=challenge)
 
+# Route for seeing all bug bounties
+@app.route('/bounties')
+@app.route('/bounty')
+def bounties():
+    bounties = query_db("SELECT * FROM bug_bounties ORDER BY status, id DESC")
+    return render_template('bounties.html', bounties=bounties)
 
+# Route to add a new bug bounty
+@app.route('/add_bounty', methods=['GET', 'POST'])
+def add_bounty():
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        prize = str(request.form['prize'])
+
+        # Insert the new bounty into the database
+        query_db("""
+            INSERT INTO bug_bounties (title, description, status, prize, completed_by, completion_dates) 
+            VALUES (?, ?, ?, ?, ?, ?);
+        """, (title, description, 'open', prize, '', ''))
+        
+        return redirect(url_for('dashboard'))
+    return render_template('add_bounty.html')
+
+# Route to edit a bug bounty (mark it completed and who completed it)
+@app.route('/edit/<int:bounty_id>', methods=['GET', 'POST'])
+def edit_bounty(bounty_id):
+    bounty = query_db("SELECT * FROM bug_bounties WHERE id = ?", (bounty_id,), one=True)
+
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        prize = request.form['prize']
+        status = request.form['status']
+        completed_by = request.form['completed_by']
+        completion_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Prepare the completed_by and completion_dates lists if status is 'closed'
+        completed_by_list = bounty['completed_by'].split(',') if bounty['completed_by'] else []
+        completion_dates_list = bounty['completion_dates'].split(',') if bounty['completion_dates'] else []
+
+        if completed_by and status == 'closed':
+            completed_by_list.append(completed_by)
+            completion_dates_list.append(completion_date)
+
+        # Update the bounty data in the database
+        query_db("""
+            UPDATE bug_bounties
+            SET title = ?, description = ?, prize = ?, status = ?, 
+                completed_by = ?, completion_dates = ?
+            WHERE id = ?;
+        """, (title, description, prize, status, ','.join(completed_by_list), ','.join(completion_dates_list), bounty_id))
+
+        return redirect(url_for('bounties'))
+
+    return render_template('edit_bounty.html', bounty=bounty)
 # Start the Flask server
 if __name__ == "__main__":
     app.run(debug=True)

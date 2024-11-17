@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Bounties</title>
+</head>
+<body>
+    <h1>All Bug Bounties</h1>
+    <a href="{{ url_for('add_bounty') }}">Add New Bug Bounty</a>
+
+    <h2>Open Bounties</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Prize</th>
+                <th>Completed By</th>
+                <th>Completion Dates</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bounty in bounties %}
+                {% if bounty.status == 'open' %}
+                <tr>
+                    <td>{{ bounty.title }}</td>
+                    <td>{{ bounty.description }}</td>
+                    <td>{{ bounty.status }}</td>
+                    <td>{{ bounty.prize }}</td>
+                    <td>{{ bounty.completed_by }}</td>
+                    <td>{{ bounty.completion_dates }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Closed Bounties</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Prize</th>
+                <th>Completed By</th>
+                <th>Completion Dates</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bounty in bounties %}
+                {% if bounty.status == 'closed' %}
+                <tr>
+                    <td>{{ bounty.title }}</td>
+                    <td>{{ bounty.description }}</td>
+                    <td>{{ bounty.status }}</td>
+                    <td>{{ bounty.prize }}</td>
+                    <td>{{ bounty.completed_by }}</td>
+                    <td>{{ bounty.completion_dates }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
