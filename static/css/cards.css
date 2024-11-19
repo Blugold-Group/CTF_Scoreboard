@@ -1,0 +1,19 @@
+/* Custom styles to make the cards fit next to each other */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates 4 equal columns */
+    gap: 1rem; /* Space between cards */
+    }
+.card {
+    background: #0E2358;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.badge {
+    background-color: green;
+    color: white;
+    padding: 4px 8px;
+    text-align: center;
+    border-radius: 5px;
+} 

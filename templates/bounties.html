@@ -3,82 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
+    <link rel="stylesheet" href="/static/css/cards.css">
     <title>Bug Bounties</title>
 </head>
 <body>
+    <main class="container">
+
+        <nav>
+            <ul>
+                <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
+            </ul>
+            <ul>
+                <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
+                <li><a href="/ctf">CTFs</a></li>
+                <li><a href="/bounties">Bounties</a></li>
+                <li><a href="/schedule">Schedule</a></li>
+
+            </ul>
+        </nav>
+
     <h1>All Bug Bounties</h1>
+    <p>Bug bounties are one-off challenges where members are encouraged to find and report security flaws in a website, app, or system, with the chance to earn rewards or recognition. The club offers these challenges to help members practice and improve their hacking and security skills in a safe, controlled environment. It's a fun way to learn, compete, and contribute to improving the security of systems while also earning rewards for discovering vulnerabilities. <b>If you complete one of these challenges, let an exec member know to claim your prize!</b></p>
+
+    {% if is_admin %}
     <a href="{{ url_for('add_bounty') }}">Add New Bug Bounty</a>
+    {% endif %}
 
-    <h2>Open Bounties</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Prize</th>
-                <th>Completed By</th>
-                <th>Completion Dates</th>
-                {% if is_admin %}
-                <th>Actions</th>
-                {% endif %}  
-            </tr>
-        </thead>
-        <tbody>
-            {% for bounty in bounties %}
-                {% if bounty.status == 'open' %}
-                <tr>
-                    <td>{{ bounty.title }}</td>
-                    <td>{{ bounty.description }}</td>
-                    <td>{{ bounty.status }}</td>
-                    <td>{{ bounty.prize }}</td>
-                    <td>{{ bounty.completed_by }}</td>
-                    <td>{{ bounty.completion_dates }}</td>
-                    {% if is_admin %}    
-                    <td>
-                        <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
-                    </td>
-                    {% endif %}  
-                </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="container">
+        <h1>Open Bounties</h1>
+        <div class="card-container">
+        {% for bounty in bounties %}
+        {% if bounty.status == 'open' %}
+            <div class="card">
+                <h3>{{ bounty.title }} <!--<span class="badge">Open</span>--></h3> 
+                <p>{{ bounty.description }}</p>
 
-    <h2>Closed Bounties</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Prize</th>
-                <th>Completed By</th>
-                <th>Completion Dates</th>
-                {% if is_admin %}
-                <th>Actions</th>
-                {% endif %}  
-            </tr>
-        </thead>
-        <tbody>
-            {% for bounty in bounties %}
-                {% if bounty.status == 'closed' %}
-                <tr>
-                    <td>{{ bounty.title }}</td>
-                    <td>{{ bounty.description }}</td>
-                    <td>{{ bounty.status }}</td>
-                    <td>{{ bounty.prize }}</td>
-                    <td>{{ bounty.completed_by }}</td>
-                    <td>{{ bounty.completion_dates }}</td>
-                    {% if is_admin %}    
-                    <td>
-                        <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
-                    </td>
-                    {% endif %}  
-                </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+                <footer><p><b>Prize: </b>{{ bounty.prize }}</p></footer>
+            {% if is_admin %}    
+            <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
+            {% endif %}  
+            </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+        </div>
+    </div>
+
+    <br>
+    <div class="container">
+        <h1>Closed Bounties</h1>
+        <div class="card-container">
+        {% for bounty in bounties %}
+        {% if bounty.status != 'open' %}
+            <div class="card">
+                <h3>{{ bounty.title }} <!--<span class="badge">Open</span>--></h3> 
+                <p>{{ bounty.description }}</p>
+
+                <p>Completed by: {{ bounty.completed_by }}</p>
+                <p>Completed on: {{ bounty.completion_dates }}</p>
+
+
+                <footer><p><b>Prize: </b>{{ bounty.prize }}</p></footer>
+            {% if is_admin %}    
+            <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
+            {% endif %}  
+            </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+        </div>
+    </div>
+
+
+    </main>
 </body>
 </html>

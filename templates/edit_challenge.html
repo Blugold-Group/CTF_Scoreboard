@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
     <title>Edit Challenge</title>
 </head>
 <body>
+    <main class="container">
+
+        <nav>
+            <ul>
+                <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
+            </ul>
+            <ul>
+                <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
+                <li><a href="/ctf">CTFs</a></li>
+                <li><a href="/bounties">Bounties</a></li>
+                <li><a href="/schedule">Schedule</a></li>
+
+            </ul>
+        </nav>
+
     <h1>Edit Challenge</h1>
     <form method="POST">
         <label for="name">Challenge Name:</label><br>
@@ -24,5 +40,6 @@
     </form>
     <br>
     <a href="{{ url_for('view_ctf', ctf_id=challenge['ctf_id']) }}">Back to CTF</a>
+    </main>
 </body>
 </html>

@@ -3,59 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
+    <link rel="stylesheet" href="/static/css/cards.css">
     <title>Blugold Group</title>
+
 </head>
-<body>
-    <h1>Blugold Group</h1>
+    <body>
+        <main class="container">
 
-    <h2>Open Bounties</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Prize</th>
-                <th>Completed By</th>
-                <th>Completion Dates</th>
-                {% if is_admin %}
-                <th>Actions</th>
-                {% endif %}  
-            </tr>
-        </thead>
-        <tbody>
-            {% for bounty in bounties %}
+            <nav>
+                <ul>
+                    <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
+                </ul>
+                <ul>
+                    <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
+                    <li><a href="/ctf">CTFs</a></li>
+                    <li><a href="/bounties">Bounties</a></li>
+                    <li><a href="/schedule">Schedule</a></li>
+
+                </ul>
+            </nav>
+
+            <div class="container">
+                <h1>Open Bounties</h1>
+                <div class="card-container">
+                {% set max_cards = 4 %}
+                {% for bounty in bounties[:max_cards] %}
                 {% if bounty.status == 'open' %}
-                <tr>
-                    <td>{{ bounty.title }}</td>
-                    <td>{{ bounty.description }}</td>
-                    <td>{{ bounty.status }}</td>
-                    <td>{{ bounty.prize }}</td>
-                    <td>{{ bounty.completed_by }}</td>
-                    <td>{{ bounty.completion_dates }}</td>
-                    {% if is_admin %}    
-                    <td>
-                        <a href="{{ url_for('edit_bounty', bounty_id=bounty.id) }}">Edit</a>
-                    </td>
-                    {% endif %}  
-                </tr>
+                    <div class="card">
+                        <h3>{{ bounty.title }} <span class="badge">Open</span></h3> 
+                        <p>{{ bounty.description }}</p>
+
+                        <footer><p><b>Prize: </b>{{ bounty.prize }}</p></footer>
+                    </div>
                 {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{{ url_for('bounties') }}">See All Bounties</a>
 
-    <h2>Open CTFs</h2>
-    {% for ctf in open_ctfs %}
-    <div class="ctf open-ctf">
-        <div class="ctf-header">
-            <a href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
-        </div>
-        <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
-        <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
-    </div>
-    {% endfor %}
-    <a href="{{ url_for('list_ctfs') }}">See All CTFs</a>
+                {% endfor %}
+                <!--
+                <div class="card">
+                    <h3><a class="contrast" href="{{ url_for('bounties') }}">All Bounties</a></h3>
+                    <a class="contrast" href="{{ url_for('bounties') }}">See All Bounties</a>
+                </div>
+                -->
 
-</body>
+                </div>
+            </div>
+
+            <br>
+            <div class="container">
+                <!--<h1>Want to add a badge saying 'closing soon' if the end date is within a week</h1>-->
+
+                <h1>Open CTFs</h1>
+                <div class="card-container">
+                {% for ctf in open_ctfs[:max_cards] %}
+                    <div class="card">
+                        <h3><a class="contrast" href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a> <!--<span class="badge">Open</span>--></h3> 
+                        <p><b>Challenges:</b> {{ ctf['challenge_count'] }}</p>
+                        <p><b>End date:</b> {{ ctf['end_date'] }}</p>
+                    </div>
+                {% endfor %}
+
+                <!--
+                <div class="card">
+                    <h3><a class="contrast" href="{{ url_for('list_ctfs') }}">All CTFs</a></h3>
+                    <a class="contrast" href="{{ url_for('list_ctfs') }}">See all Capture the Flags</a>
+                </div>
+                -->
+
+                </div>
+            </div>
+
+        </main>
+    </body>
 </html>
