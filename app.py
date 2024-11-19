@@ -302,40 +302,44 @@ def favicon():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        
+
         username = request.form['username']
         password = request.form['password']
         otp = request.form['otp']
 
+
+        """
+        # For development
         user_data = query_db('SELECT * FROM users WHERE username = ?', [username], one=True)
 
         user = User(id=user_data['id'], username=user_data['username'], otp_secret=user_data['otp_secret'], lock_permissions=user_data['lock_permissions'], is_admin=bool(user_data['is_admin']))
         login_user(user)
         return redirect(url_for('dashboard'))
-            
 
         """
+        
         # Fetch user from DB
         user_data = query_db('SELECT * FROM users WHERE username = ?', [username], one=True)
         if user_data and check_password_hash(user_data['password'], password):
-            user = User(id=user_data['id'], username=user_data['username'], otp_secret=user_data['otp_secret'], is_admin=bool(user_data['is_admin']))
-            if user.verify_otp(otp):
-                login_user(user)
-                return redirect(url_for('dashboard'))
-            else:
-                flash("Invalid 2FA code", "danger")
+            user = User(id=user_data['id'], username=user_data['username'], otp_secret=user_data['otp_secret'], lock_permissions=user_data['lock_permissions'], is_admin=bool(user_data['is_admin']))
+            #if user.verify_otp(otp):
+            #    login_user(user)
+            #    return redirect(url_for('dashboard'))
+            #else:
+            #    flash("Invalid 2FA code", "danger")
+            return redirect(url_for('dashboard'))
         else:
             flash("Invalid username or password", "danger")
-
-        """
 
     return render_template("login.html")
 
 @app.route("/add_user", methods=["GET", "POST"])
-#@login_required
+@login_required
 def add_user():
 
-    #if not current_user.is_admin:
-    #    return redirect(url_for('dashboard'))
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
 
     if request.method == "POST":
         username = request.form['username']
@@ -483,6 +487,7 @@ def list_ctfs():
 
 # Route to create a new CTF
 @app.route('/create_ctf', methods=['GET', 'POST'])
+@login_required
 def create_ctf():
 
     if not current_user.is_admin:
@@ -507,6 +512,7 @@ def create_ctf():
 
 # Route to edit an existing CTF
 @app.route('/edit_ctf/<int:ctf_id>', methods=['GET', 'POST'])
+@login_required
 def edit_ctf(ctf_id):
 
     if not current_user.is_admin:
@@ -533,6 +539,7 @@ def edit_ctf(ctf_id):
 
 # Route to display challenges for a specific CTF
 @app.route('/ctf/<int:ctf_id>', methods=["GET", "POST"])
+@login_required
 def view_ctf(ctf_id):
 
     if request.method == "POST":
@@ -628,6 +635,7 @@ def add_challenge(ctf_id):
 
 # Route to edit an existing challenge
 @app.route('/edit_challenge/<int:challenge_id>', methods=['GET', 'POST'])
+@login_required
 def edit_challenge(challenge_id):
     challenge = query_db('SELECT * FROM challenge WHERE id = ?', (challenge_id,), one=True)
 
@@ -661,6 +669,7 @@ def bounties():
 
 # Route to add a new bug bounty
 @app.route('/add_bounty', methods=['GET', 'POST'])
+@login_required
 def add_bounty():
     if request.method == 'POST':
         title = request.form['title']
@@ -677,7 +686,9 @@ def add_bounty():
     return render_template('add_bounty.html')
 
 # Route to edit a bug bounty (mark it completed and who completed it)
+@login_required
 @app.route('/edit/<int:bounty_id>', methods=['GET', 'POST'])
+
 def edit_bounty(bounty_id):
     bounty = query_db("SELECT * FROM bug_bounties WHERE id = ?", (bounty_id,), one=True)
 
