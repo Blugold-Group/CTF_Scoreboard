@@ -332,6 +332,8 @@ def login():
         else:
             flash("Invalid username or password", "danger")
 
+        
+
     return render_template("login.html")
 
 @app.route("/add_user", methods=["GET", "POST"])
