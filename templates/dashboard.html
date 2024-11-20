@@ -31,7 +31,7 @@
                 {% for bounty in bounties[:max_cards] %}
                 {% if bounty.status == 'open' %}
                     <div class="card">
-                        <h3>{{ bounty.title }} <span class="badge">Open</span></h3> 
+                        <h3>{{ bounty.title }} <!--<span class="badge">Open</span>--></h3> 
                         <p>{{ bounty.description }}</p>
 
                         <footer><p><b>Prize: </b>{{ bounty.prize }}</p></footer>
