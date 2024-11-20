@@ -714,6 +714,16 @@ def edit_bounty(bounty_id):
         return redirect(url_for('bounties'))
 
     return render_template('edit_bounty.html', bounty=bounty)
-# Start the Flask server
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/resources')
+def resources():
+    return render_template('resources.html')
+
+
+#  Start the Flask server
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
