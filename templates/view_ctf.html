@@ -31,6 +31,16 @@
             width: 100% !important;  /* Ensure full width of the container */
         }
     </style>
+    <script>
+        // Function to handle Enter key press
+        function submitFormOnEnter(event, id) {
+            if (event.key === "Enter") { // Check if the key pressed is "Enter"
+
+                console.log(id)
+                document.getElementById("submit-form-"+id).submit(); // Submit the form
+            }
+        }
+    </script>
 </head>
 <body>
     <main class="container">
@@ -113,16 +123,17 @@
                                 <button aria-label="Close" rel="prev" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event)"></button>
                                 <h3>{{ challenge['name'] }}</h3>
                             </header>
-                            <form method="POST">
-                            <input name="submitted_flag" type="text" value="" placeholder="FLAG{your_text_here}">
+                            <form method="POST" id="submit-form-{{  challenge['id']  }}">
+                            <input autofocus name="submitted_flag" type="text" value="" placeholder="FLAG{your_text_here}" onkeydown="submitFormOnEnter(event)">
                             <input type="hidden" name="challenge_id" value="{{  challenge['id']  }}"> <!-- Hidden input area with challenge id -->
+                            {% set submit_id = "submit-form-"+(challenge['id']|string) %}
 
-                                <footer>
-                                    <button role="button" class="secondary" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event)">Cancel</button>
-                                    <button autofocus type="submit" data-target="modal-{{ challenge['id'] }}">Confirm</button>
+                                <div>
+                                    <button role="button" class="secondary" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event, {{ submit_id }})">Cancel</button>
+                                    <button style="width: 50%; float: right;" type="submit" data-target="modal-{{ challenge['id'] }}">Confirm</button>
                                     <!--<button autofocus type="submit" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event)">Confirm</button>-->
 
-                                </footer>
+                                </div>
                             </form>
                         </article>
                     </dialog>
