@@ -582,23 +582,15 @@ def view_ctf(ctf_id):
     chart_points = []
     chart_challenges = []
     
-    print(f"CTF Name: {statistics['CTF Name']}")
-    print(f"Start Date: {statistics['Start Date']}")
-    print(f"End Date: {statistics['End Date']}")
-    print(f"Total Challenges: {statistics['Total Challenges']}")
-    print(f"Total Points Available: {statistics['Total Points Available']}")
-    print(f"Total Users Participated: {statistics['Total Users Participated']}")
 
-    for column in statistics['Total Users Participated'].keys():
-        print(f"{column}: {statistics['Total Users Participated'][column]}")
+    #for column in statistics['Total Users Participated'].keys():
+    #    print(f"{column}: {statistics['Total Users Participated'][column]}")
     
-    print("\nCompleted Challenges by User:")
     for user_id, completed_challenges in statistics["Completed Challenges by User"].items():
         #print(f"User {get_username_by_user_id(user_id)}: {completed_challenges} challenges completed")
         users.append(get_username_by_user_id(user_id))
         chart_challenges.append(completed_challenges)
     
-    print("\nUser Points:")
     for user_id, points in statistics["User Points"].items():
         #print(f"User {get_username_by_user_id(user_id)}: {points} points")
         users_temp.append(get_username_by_user_id(user_id))
@@ -641,16 +633,19 @@ def add_challenge(ctf_id):
 def edit_challenge(challenge_id):
     challenge = query_db('SELECT * FROM challenge WHERE id = ?', (challenge_id,), one=True)
 
+    print("HIT")
+
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
         points = int(request.form['points'])
+        flag = request.form['flag']
 
         # Update challenge details in the database
         query_db('''
-        UPDATE challenge SET name = ?, description = ?, points = ?
+        UPDATE challenge SET name = ?, description = ?, points = ?, flag = ?
         WHERE id = ?
-        ''', (name, description, points, challenge_id))
+        ''', (name, description, points, flag, challenge_id))
 
         flash('Challenge updated successfully!', 'success')
         return redirect(url_for('view_ctf', ctf_id=challenge['ctf_id']))
