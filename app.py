@@ -633,8 +633,6 @@ def add_challenge(ctf_id):
 def edit_challenge(challenge_id):
     challenge = query_db('SELECT * FROM challenge WHERE id = ?', (challenge_id,), one=True)
 
-    print("HIT")
-
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
