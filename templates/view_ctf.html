@@ -31,16 +31,7 @@
             width: 100% !important;  /* Ensure full width of the container */
         }
     </style>
-    <script>
-        // Function to handle Enter key press
-        function submitFormOnEnter(event, id) {
-            if (event.key === "Enter") { // Check if the key pressed is "Enter"
 
-                console.log(id)
-                document.getElementById("submit-form-"+id).submit(); // Submit the form
-            }
-        }
-    </script>
 </head>
 <body>
     <main class="container">
@@ -129,7 +120,7 @@
                             {% set submit_id = "submit-form-"+(challenge['id']|string) %}
 
                                 <div>
-                                    <button role="button" class="secondary" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event, {{ submit_id }})">Cancel</button>
+                                    <button role="button" class="secondary" data-target="modal-{{ challenge['id'] }}">Cancel</button>
                                     <button style="width: 50%; float: right;" type="submit" data-target="modal-{{ challenge['id'] }}">Confirm</button>
                                     <!--<button autofocus type="submit" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event)">Confirm</button>-->
 
