@@ -14,7 +14,7 @@
 
 - Move code accross multiple files for code clarity
 
-- Add admin dashboard
+- Add admin dashboard - fix /admin
 
 - Add login logs
 

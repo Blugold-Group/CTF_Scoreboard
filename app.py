@@ -116,7 +116,7 @@ def add_user():
                  [username, hashed_password, otp_secret, lock_permissions, is_admin])  # Default user is not admin
         
         flash("User added successfully", "success")
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('dashboard'))
 
     return render_template("add_user.html")
 
@@ -164,7 +164,7 @@ def add_activity():
         points = request.form['points']
         query_db('INSERT INTO activities (name, points) VALUES (?, ?)', [name, points])
         flash("Activity added successfully", "success")
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('dashboard'))
 
     return render_template("add_activity.html")
 
@@ -191,7 +191,7 @@ def edit_user(user_id):
         new_password_hash = generate_password_hash(password)
         query_db('UPDATE users SET username = ?, password = ? WHERE id = ?', [username, new_password_hash, user_id])
         flash("User updated successfully", "success")
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('dashboard'))
 
     return render_template("edit_user.html", user=user_data)
 
