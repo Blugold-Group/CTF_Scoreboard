@@ -24,5 +24,3 @@
     - Let's us have a base file with header, js/css imports, and flash code without having to rewrite it for each file
 
 - Mark which flags have been gotten already
-
-- When user hot cancel on submit flag is tries to submit the flag

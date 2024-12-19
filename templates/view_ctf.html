@@ -120,7 +120,7 @@
                             {% set submit_id = "submit-form-"+(challenge['id']|string) %}
 
                                 <div>
-                                    <button role="button" class="secondary" data-target="modal-{{ challenge['id'] }}">Cancel</button>
+                                    <button role="button" type="button" onclick="toggleModal(event)" class="secondary" data-target="modal-{{ challenge['id'] }}">Cancel</button>
                                     <button style="width: 50%; float: right;" type="submit" data-target="modal-{{ challenge['id'] }}">Confirm</button>
                                     <!--<button autofocus type="submit" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event)">Confirm</button>-->
 
