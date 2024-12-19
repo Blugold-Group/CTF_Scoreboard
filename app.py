@@ -327,10 +327,10 @@ def login():
             #    login_user(user)
             #    return redirect(url_for('dashboard'))
             #else:
-            #    flash("Invalid 2FA code", "danger")
+            #    flash("Invalid 2FA code", "error")
             return redirect(url_for('dashboard'))
         else:
-            flash("Invalid username or password", "danger")
+            flash("Invalid username or password", "error")
 
         
 
@@ -493,7 +493,7 @@ def list_ctfs():
 def create_ctf():
 
     if not current_user.is_admin:
-        flash("You are not authorized to create CTFs.", "danger")
+        flash("You are not authorized to create CTFs.", "error")
         return redirect(url_for('dashboard'))
     
     if request.method == 'POST':
@@ -518,7 +518,7 @@ def create_ctf():
 def edit_ctf(ctf_id):
 
     if not current_user.is_admin:
-        flash("You are not authorized to create CTFs.", "danger")
+        flash("You are not authorized to create CTFs.", "error")
         return redirect(url_for('dashboard'))
 
     ctf = query_db('SELECT * FROM ctf WHERE id = ?', (ctf_id,), one=True)
@@ -607,7 +607,7 @@ def view_ctf(ctf_id):
 @login_required
 def add_challenge(ctf_id):
     if not current_user.is_admin:
-        flash("You are not authorized to add challenges.", "danger")
+        flash("You are not authorized to add challenges.", "error")
         return redirect(url_for('view_ctf', ctf_id=ctf_id))
 
     if request.method == 'POST':
