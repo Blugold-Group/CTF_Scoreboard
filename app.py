@@ -1,114 +1,22 @@
 import sqlite3
-from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory
+from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pyotp, os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-"""
-import pyotp
-totp = pyotp.TOTP(pyotp.random_base32())
-print(totp.now())  # Display current OTP
-print(totp.secret)  # Store this secret in your User model
-"""
+from config import *
+from helpers import *
+from routes.ctf import ctf_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 
-# SQLite3 Database path
-DATABASE = 'database.db'
+# Register blueprints (see readme for more info)
+app.register_blueprint(ctf_bp)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
-
-# Initialize the database
-def init_db():
-    with sqlite3.connect(DATABASE) as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            otp_secret TEXT NOT NULL,
-            lock_permissions TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0
-        )
-        ''')
-
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS activities (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            points INTEGER NOT NULL
-        )
-        ''')
-
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS user_activities (
-            user_id INTEGER NOT NULL,
-            activity_id INTEGER NOT NULL,
-            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (user_id, activity_id),
-            FOREIGN KEY (user_id) REFERENCES users(id),
-            FOREIGN KEY (activity_id) REFERENCES activities(id)
-        )
-        ''')
-
-        conn.execute('''
-            CREATE TABLE IF NOT EXISTS locks (
-                id INTEGER UNIQUE NOT NULL,
-                name TEXT,
-                permissions TEXT NOT NULL
-            );
-        ''')
-
-        conn.execute('''
-        CREATE TABLE IF NOT EXISTS ctf (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            start_date TEXT NOT NULL,
-            end_date TEXT NOT NULL
-        )
-        ''')
-
-        conn.execute('''
-        CREATE TABLE IF NOT EXISTS challenge (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ctf_id INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            description TEXT,
-            points INTEGER NOT NULL,
-            flag TEXT NOT NULL,  -- Adding the flag column
-            FOREIGN KEY (ctf_id) REFERENCES ctf(id)
-        )
-        ''')
-
-        conn.execute('''
-        CREATE TABLE IF NOT EXISTS user_challenges (
-            user_id INTEGER NOT NULL,
-            challenge_id INTEGER NOT NULL,
-            completed INTEGER DEFAULT 0,
-            timestamp TEXT,
-            FOREIGN KEY (user_id) REFERENCES users(id),
-            FOREIGN KEY (challenge_id) REFERENCES challenge(id),
-            PRIMARY KEY (user_id, challenge_id)
-        )
-        ''')              
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS bug_bounties (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT,
-            status TEXT CHECK(status IN ('open', 'closed')) NOT NULL,
-            prize TEXT NOT NULL,
-            completed_by TEXT,  -- Comma-separated list of users who completed the bounty
-            completion_dates TEXT  -- Comma-separated list of timestamps
-        );
-        """)
-
-        conn.commit()
 
 # Set up the user loader for Flask-Login
 @login_manager.user_loader
@@ -133,167 +41,10 @@ class User(UserMixin):
         totp = pyotp.TOTP(self.otp_secret)
         return totp.verify(otp)
 
-# Initialize the DB
+# If the database doesn't exist, create it
 init_db()
 
-# Helper function to interact with the database
-def query_db(query, args=(), one=False):
-    with sqlite3.connect(DATABASE) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute(query, args)
-        rv = cursor.fetchall()
-        conn.commit()
-        return (rv[0] if rv else None) if one else rv
-
-# Function to add a CTF event
-def add_ctf(name, start_date, end_date):
-    query_db('''
-    INSERT INTO ctf (name, start_date, end_date)
-    VALUES (?, ?, ?)
-    ''', (name, start_date, end_date))
-
-# Function to add a challenge to a CTF
-def add_challenge(ctf_id, name, description, points):
-    query_db('''
-    INSERT INTO challenge (ctf_id, name, description, points)
-    VALUES (?, ?, ?, ?)
-    ''', (ctf_id, name, description, points))
-
-# Function to record a user's challenge completion
-def complete_challenge(user_id, challenge_id):
-    completion_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    
-    query_db('''
-    INSERT INTO challenge_completion (user_id, challenge_id, completion_date)
-    VALUES (?, ?, ?)
-    ''', (user_id, challenge_id, completion_date))
-
-# Function to get challenges completed by a specific user
-def get_user_completions(user_id):
-    return query_db('''
-    SELECT c.name, ch.completion_date 
-    FROM challenge_completion ch
-    JOIN challenge c ON ch.challenge_id = c.id
-    WHERE ch.user_id = ?
-    ''', (user_id,))
-
-# Function to get all challenges in a specific CTF
-def get_ctf_challenges(ctf_id):
-    return query_db('''
-    SELECT name, description, points 
-    FROM challenge
-    WHERE ctf_id = ?
-    ''', (ctf_id,))
-
-# Marks that a user has completed a challenge in a ctf
-def mark_challenge_completed(user_id, challenge_id, submitted_flag):
-    
-    # Check if the challenge exists and retrieve its flag
-    challenge_query = "SELECT id, flag FROM challenge WHERE id = ?"
-
-    challenge = query_db(challenge_query, (challenge_id,), one=True)
-    if not challenge:
-        return False
-    
-    # Check if the user has already completed the challenge
-    user_challenge_query = """
-        SELECT completed FROM user_challenges WHERE user_id = ? AND challenge_id = ?
-    """
-    existing_entry = query_db(user_challenge_query, (user_id, challenge_id), one=True)
-    
-    timestamp = datetime.now().isoformat()  # current timestamp in ISO format
-    if existing_entry:
-        if existing_entry['completed'] == 1:
-            return "already_submitted"
-        
-    # Checks if the submitted flag is correct
-    stored_flag = challenge['flag']
-    if submitted_flag != stored_flag:
-        return "wrong_flag"
-    
-    # Insert a new record indicating challenge completion
-    insert_query = """
-        INSERT INTO user_challenges (user_id, challenge_id, completed, timestamp)
-        VALUES (?, ?, 1, ?)
-    """
-    query_db(insert_query, (user_id, challenge_id, timestamp))
-
-    return "success"
-
-def get_ctf_statistics(ctf_id):
-    # 1. Get total number of challenges and total points for the CTF
-    query = '''
-    SELECT COUNT(*), SUM(points)
-    FROM challenge
-    WHERE ctf_id = ?
-    '''
-    total_challenges, total_points = query_db(query, (ctf_id,), one=True)
-
-    # 2. Get the number of users who participated (i.e., who completed at least one challenge)
-    query = '''
-    SELECT COUNT(DISTINCT user_id)
-    FROM user_challenges
-    JOIN challenge ON user_challenges.challenge_id = challenge.id
-    WHERE challenge.ctf_id = ?
-    '''
-    total_users = query_db(query, (ctf_id,), one=True)
-
-    # 3. Get number of completed challenges per user
-    query = '''
-    SELECT user_id, COUNT(*) AS completed_challenges
-    FROM user_challenges
-    JOIN challenge ON user_challenges.challenge_id = challenge.id
-    WHERE challenge.ctf_id = ? AND user_challenges.completed = 1
-    GROUP BY user_id
-    '''
-    completed_by_user = query_db(query, (ctf_id,))
-    completed_challenges_by_user = {user_id: completed_challenges for user_id, completed_challenges in completed_by_user}
-
-    # 4. Get total points per user
-    query = '''
-    SELECT user_challenges.user_id, SUM(challenge.points) AS total_points
-    FROM user_challenges
-    JOIN challenge ON user_challenges.challenge_id = challenge.id
-    WHERE challenge.ctf_id = ? AND user_challenges.completed = 1
-    GROUP BY user_challenges.user_id
-    '''
-    user_points = query_db(query, (ctf_id,))
-    user_points_dict = {user_id: total_points for user_id, total_points in user_points}
-
-    # 5. Get the names of the CTF event and its start/end dates
-    query = '''
-    SELECT name, start_date, end_date
-    FROM ctf
-    WHERE id = ?
-    '''
-    ctf_details = query_db(query, (ctf_id,), one=True)
-    ctf_name, start_date, end_date = ctf_details
-
-    # Format the output as a dictionary for readability
-    statistics = {
-        "CTF Name": ctf_name,
-        "Start Date": start_date,
-        "End Date": end_date,
-        "Total Challenges": total_challenges,
-        "Total Points Available": total_points,
-        "Total Users Participated": total_users,
-        "Completed Challenges by User": completed_challenges_by_user,
-        "User Points": user_points_dict
-    }
-
-    return statistics
-
-def get_username_by_user_id(user_id):
-    query = "SELECT username FROM users WHERE id = ?"
-    result = query_db(query, (user_id,), one=True)
-    
-    if result:
-        return result['username']  # Return the username from the row
-    else:
-        return None  # Return None if no user found
-
-# Hosts favicon
+# Icon in browser tab
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('static/images', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
@@ -328,11 +79,11 @@ def login():
             #    return redirect(url_for('dashboard'))
             #else:
             #    flash("Invalid 2FA code", "error")
+
+            login_user(user)
             return redirect(url_for('dashboard'))
         else:
             flash("Invalid username or password", "error")
-
-        
 
     return render_template("login.html")
 
@@ -464,191 +215,6 @@ def scoreboard():
     user_scores = sorted(user_scores, key=lambda x: x[1], reverse=True)
     return render_template("scoreboard.html", user_scores=user_scores)
 
-# CTFs Landing page
-@app.route('/ctf')
-def list_ctfs():
-    current_date = datetime.now().strftime('%Y-%m-%d')  # Get today's date
-
-    # Fetch all CTFs along with the number of challenges and their status (open/closed)
-    ctfs = query_db('''
-    SELECT c.id, c.name, c.start_date, c.end_date, 
-           (SELECT COUNT(*) FROM challenge WHERE ctf_id = c.id) AS challenge_count
-    FROM ctf c
-    ORDER BY c.end_date >= ?, c.end_date DESC
-    ''', (current_date,))
-
-    # Separate CTFs into open and closed
-    open_ctfs = [ctf for ctf in ctfs if ctf['end_date'] >= current_date]
-    closed_ctfs = [ctf for ctf in ctfs if ctf['end_date'] < current_date]
-
-    is_admin = False
-    if current_user.is_authenticated:
-        is_admin = current_user.is_admin
-
-    return render_template('list_ctfs.html', open_ctfs=open_ctfs, closed_ctfs=closed_ctfs, is_admin=is_admin)
-
-# Route to create a new CTF
-@app.route('/create_ctf', methods=['GET', 'POST'])
-@login_required
-def create_ctf():
-
-    if not current_user.is_admin:
-        flash("You are not authorized to create CTFs.", "error")
-        return redirect(url_for('dashboard'))
-    
-    if request.method == 'POST':
-        name = request.form['name']
-        start_date = request.form['start_date']
-        end_date = request.form['end_date']
-
-        # Insert CTF into the database
-        query_db('''
-        INSERT INTO ctf (name, start_date, end_date)
-        VALUES (?, ?, ?)
-        ''', (name, start_date, end_date))
-
-        flash('CTF created successfully!', 'success')
-        return redirect(url_for('list_ctfs'))
-
-    return render_template('create_ctf.html')
-
-# Route to edit an existing CTF
-@app.route('/edit_ctf/<int:ctf_id>', methods=['GET', 'POST'])
-@login_required
-def edit_ctf(ctf_id):
-
-    if not current_user.is_admin:
-        flash("You are not authorized to create CTFs.", "error")
-        return redirect(url_for('dashboard'))
-
-    ctf = query_db('SELECT * FROM ctf WHERE id = ?', (ctf_id,), one=True)
-
-    if request.method == 'POST':
-        name = request.form['name']
-        start_date = request.form['start_date']
-        end_date = request.form['end_date']
-
-        # Update CTF details in the database
-        query_db('''
-        UPDATE ctf SET name = ?, start_date = ?, end_date = ?
-        WHERE id = ?
-        ''', (name, start_date, end_date, ctf_id))
-
-        flash('CTF updated successfully!', 'success')
-        return redirect(url_for('dashboard'))
-
-    return render_template('edit_ctf.html', ctf=ctf)
-
-# Route to display challenges for a specific CTF
-@app.route('/ctf/<int:ctf_id>', methods=["GET", "POST"])
-@login_required
-def view_ctf(ctf_id):
-
-    if request.method == "POST":
-        # Method for user submitting answer to the challenge
-    
-        challenge_id = request.form.get('challenge_id')
-        submitted_flag = request.form.get('submitted_flag')
-
-        marked = mark_challenge_completed(current_user.id, challenge_id, submitted_flag)
-
-        if marked == "success":
-            # Successfully submitted flag, all correct
-            flash('Flag Submitted!', 'success')
-        elif marked == "wrong_flag":
-            # Successfully submitted flag, all correct
-            flash('Wrong flag!', 'error')
-        elif marked == "already_submitted":
-            # Something went wrong, user already submitted this flag, not correct
-            flash('You already submitted this flag!', 'error')
-        else:
-            # Something went wrong, user already submitted this flag, not correct
-            flash('Something went wrong!', 'error')
-
-
-    challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
-
-    name = (query_db("SELECT name FROM ctf WHERE id = ?", (ctf_id,), one=True))['name']
-
-    is_admin = False
-    if current_user.is_authenticated:
-        is_admin = current_user.is_admin
-
-
-    statistics = get_ctf_statistics(ctf_id)
-
-    users=[]
-    users_temp=[]
-    chart_points = []
-    chart_challenges = []
-    
-
-    #for column in statistics['Total Users Participated'].keys():
-    #    print(f"{column}: {statistics['Total Users Participated'][column]}")
-    
-    for user_id, completed_challenges in statistics["Completed Challenges by User"].items():
-        #print(f"User {get_username_by_user_id(user_id)}: {completed_challenges} challenges completed")
-        users.append(get_username_by_user_id(user_id))
-        chart_challenges.append(completed_challenges)
-    
-    for user_id, points in statistics["User Points"].items():
-        #print(f"User {get_username_by_user_id(user_id)}: {points} points")
-        users_temp.append(get_username_by_user_id(user_id))
-        chart_points.append(points)
-
-    users_temp_index_map = {value: index for index, value in enumerate(users_temp)}
-
-    chart_points = [chart_points[users_temp_index_map[value]] for value in users]
-
-    return render_template('view_ctf.html', challenges=challenges, ctf_id=ctf_id, is_admin=is_admin, name=name, users=users, chart_points=chart_points, chart_challenges=chart_challenges)
-
-# Route to add a new challenge to a specific CTF
-@app.route('/add_challenge/<int:ctf_id>', methods=['GET', 'POST'])
-@login_required
-def add_challenge(ctf_id):
-    if not current_user.is_admin:
-        flash("You are not authorized to add challenges.", "error")
-        return redirect(url_for('view_ctf', ctf_id=ctf_id))
-
-    if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
-        points = int(request.form['points'])
-        flag = request.form['flag']  # Get the flag value from the form
-
-        # Insert challenge into the database
-        query_db('''
-        INSERT INTO challenge (ctf_id, name, description, points, flag)
-        VALUES (?, ?, ?, ?, ?)
-        ''', (ctf_id, name, description, points, flag))
-
-        flash('Challenge added successfully!', 'success')
-        return redirect(url_for('view_ctf', ctf_id=ctf_id))
-
-    return render_template('add_challenge.html', ctf_id=ctf_id)
-
-# Route to edit an existing challenge
-@app.route('/edit_challenge/<int:challenge_id>', methods=['GET', 'POST'])
-@login_required
-def edit_challenge(challenge_id):
-    challenge = query_db('SELECT * FROM challenge WHERE id = ?', (challenge_id,), one=True)
-
-    if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
-        points = int(request.form['points'])
-        flag = request.form['flag']
-
-        # Update challenge details in the database
-        query_db('''
-        UPDATE challenge SET name = ?, description = ?, points = ?, flag = ?
-        WHERE id = ?
-        ''', (name, description, points, flag, challenge_id))
-
-        flash('Challenge updated successfully!', 'success')
-        return redirect(url_for('view_ctf', ctf_id=challenge['ctf_id']))
-
-    return render_template('edit_challenge.html', challenge=challenge)
 
 # Route for seeing all bug bounties
 @app.route('/bounties')

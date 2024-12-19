@@ -61,7 +61,7 @@
     {% for ctf in open_ctfs %}
     <div class="ctf open-ctf">
         <div class="ctf-header">
-            <a class="contrast" href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+            <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
         </div>
         <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
         <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
@@ -72,7 +72,7 @@
     {% for ctf in closed_ctfs %}
     <div class="ctf closed-ctf">
         <div class="ctf-header">
-            <a class="contrast" href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+            <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
         </div>
         <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
         <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>

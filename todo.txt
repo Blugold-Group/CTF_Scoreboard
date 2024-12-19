@@ -12,8 +12,6 @@
 
 - Have a page with all users, points in all ctfs, bug bounties finished, and titles (exec, master locksmith, etc)
 
-- Add /logout
-
 - Move code accross multiple files for code clarity
 
 - Add admin dashboard
@@ -21,3 +19,10 @@
 - Add login logs
 
 - Add discord handles for users or real names
+
+- Make Flask inherit base files https://stackoverflow.com/questions/34378023/flask-template-inheritance-tutorial
+    - Let's us have a base file with header, js/css imports, and flash code without having to rewrite it for each file
+
+- Mark which flags have been gotten already
+
+- When user hot cancel on submit flag is tries to submit the flag

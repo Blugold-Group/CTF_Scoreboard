@@ -58,7 +58,7 @@
                 <div class="card-container">
                 {% for ctf in open_ctfs[:max_cards] %}
                     <div class="card">
-                        <h3><a class="contrast" href="{{ url_for('view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a> <!--<span class="badge">Open</span>--></h3> 
+                        <h3><a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a> <!--<span class="badge">Open</span>--></h3> 
                         <p><b>Challenges:</b> {{ ctf['challenge_count'] }}</p>
                         <p><b>End date:</b> {{ ctf['end_date'] }}</p>
                     </div>
@@ -66,8 +66,8 @@
 
                 <!--
                 <div class="card">
-                    <h3><a class="contrast" href="{{ url_for('list_ctfs') }}">All CTFs</a></h3>
-                    <a class="contrast" href="{{ url_for('list_ctfs') }}">See all Capture the Flags</a>
+                    <h3><a class="contrast" href="{{ url_for('ctf.list_ctfs') }}">All CTFs</a></h3>
+                    <a class="contrast" href="{{ url_for('ctf.list_ctfs') }}">See all Capture the Flags</a>
                 </div>
                 -->
 
