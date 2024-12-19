@@ -1,7 +1,5 @@
 - Need to be able to show CTFs on the scoreboard, I want individual bug bounties, but also there needs to be a page for open ctf, and a page for people to submit the flags to get credit for them
 
-- Want to add a badge saying 'closing soon' if the end date is within a week
-
 - Add a resources page with the slides from each week and resources to learn the topic taught
 
 - Make ctf challenge submissions validate FLAG{} format with https://picocss.com/docs/forms/input#validation-states
@@ -14,7 +12,7 @@
 
 - Move code accross multiple files for code clarity
 
-- Add admin dashboard - fix /admin
+- Add admin dashboard
 
 - Add login logs
 

@@ -54,7 +54,7 @@
     <p>Capture The Flag (CTF) competitions are exciting challenges where you solve puzzles and problems related to cybersecurity to "capture" hidden flags. These events help you learn about different areas of security, like coding, finding vulnerabilities, and protecting systems, all while competing against others. CTFs are a fun way to improve your skills, work in teams, and get a hands-on feel for the real-world challenges that cybersecurity professionals face.</p>
 
     {% if is_admin %}
-    <a href="{{ url_for('create_ctf')}}">Add a CTF</a>
+    <a href="{{ url_for('ctf.create_ctf')}}">Add a CTF</a>
     {% endif %}  
 
     <h2>Open CTFs</h2>

@@ -289,6 +289,10 @@ def about():
 def resources():
     return render_template('resources.html')
 
+@app.route('/members')
+@app.route('/users')
+def view_members():
+    return render_template('members.html')
 
 #  Start the Flask server
 if __name__ == "__main__":
