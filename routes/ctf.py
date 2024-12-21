@@ -50,7 +50,7 @@ def create_ctf():
         ''', (name, start_date, end_date))
 
         flash('CTF created successfully!', 'success')
-        return redirect(url_for('list_ctfs'))
+        return redirect(url_for('ctf.list_ctfs'))
 
     return render_template('create_ctf.html')
 
