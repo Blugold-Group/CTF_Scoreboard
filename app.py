@@ -328,10 +328,66 @@ def view_members():
         else:
             tags.append("")
 
-    # Need to pass a list of badges which correspond with usernames, also colors if we want to make them different backrgound colors
-
     return render_template('members.html', usernames=usernames, points=points, total_user_challenges=total_user_challenges, tags=tags)
 
-#  Start the Flask server
+@app.route('/admin_reset_password', methods=['GET', 'POST'])
+@login_required
+def admin_reset_password():
+
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        if query_db('SELECT * FROM users WHERE username = ?', [username], one=True) is not None:
+            if password == confirm_password:
+
+                hashed_password = generate_password_hash(password)
+                query_db('UPDATE users SET password = ? WHERE username = ?', [hashed_password, username])
+
+                flash('Password reset successful!', 'success')
+                return redirect(url_for('admin_reset_password'))
+            else:
+                flash('Passwords do not match!', 'error')
+        else:
+            flash('User not found!', 'error')
+
+    # Render the reset password form (GET request)
+    return render_template('admin_reset_password.html')
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+@login_required
+def reset_password():
+
+
+    if request.method == 'POST':
+        old_password = request.form.get('old_password')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        user_data = query_db('SELECT * FROM users WHERE username = ?', [current_user.username], one=True)
+
+        if user_data is not None:
+            if password == confirm_password:
+
+                check_password_hash(user_data['password'], old_password)
+
+                new_hashed_password = generate_password_hash(password)
+                query_db('UPDATE users SET password = ? WHERE username = ?', [new_hashed_password, current_user.username])
+
+                flash('Password reset successful!', 'success')
+                return redirect(url_for('reset_password'))
+            else:
+                flash('Passwords do not match!', 'error')
+        else:
+            flash('User not found!', 'error')
+
+    # Render the reset password form (GET request)
+    return render_template('reset_password.html')
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
