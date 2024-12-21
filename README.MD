@@ -1,12 +1,12 @@
 # Blugold Group Website
 
-This website has three main purposes
+This website is the website for the Blugold Group, the cybersecurity club of the University of Wisconsin - Eau Claire.
 
-1. Host ctf challenges for members
-2. Host bug bounties for members
-3. Provide authentication for the CLEAS
+It is not meant to be hosted on the open web, but rather on the cybersecurity lab network. Its hosted on the open web over the winterim 2024-2025 to provide access for members to a Winterim CTF
 
-The information on the /about page and /resources page has to be edited through the html directly
+As we are a technical club, we try to make the documentation for the server as clear and comprehensive as possible to lower the barrier for members to dig into the code with as little tachnical experience as possible. As such, this documentation file aims to be a comprehensive guide to every moving part of the server.
+
+This guide is still a work in progress
 
 ## Architecture
 
@@ -28,7 +28,7 @@ Add new badges in the `/about/badges` page and the css of `/members`
 
 If you add on to this codebase, please add your name below
 
-This server was created by Jack Hagem the founder of the cyber club over a weekend in October 2024
+This server was created by Jack Hagen (the founder of the club) over a weekend in October 2024
 
 ### Historical Notes
 
