@@ -6,7 +6,7 @@
 
 - Have a scoreboard for user points on the dashboard
 
-- Add method to reset user password
+- Add page to reset user password
 
 - Have a page with all users, points in all ctfs, bug bounties finished, and titles (exec, master locksmith, etc)
 
@@ -22,3 +22,13 @@
     - Let's us have a base file with header, js/css imports, and flash code without having to rewrite it for each file
 
 - Mark which flags have been gotten already
+
+- Add link to add user on admin dashboard
+
+- Have simple explanation page for different tags for users (locksmith, crypto monster, etc)
+
+- Need a way to make a user an admin or not
+
+- Add link to logout
+
+- Get striped css to stay attached to table on /members after clicking header

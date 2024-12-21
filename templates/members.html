@@ -4,7 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-    <title>Admin</title>
+    <title>Members</title>
+    <style>
+        th {
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;  /* Smooth transition for hover effects */
+        }
+        th:hover {
+            background-color: #e0e0e0;
+            color: #007bff;
+        }
+
+        .master_locksmith_badge {
+            background-color: green;
+            color: white;
+            padding: 4px 8px;
+            text-align: center;
+            border-radius: 5px;
+        } 
+
+        .exec_badge {
+            background-color: red;
+            color: white;
+            padding: 4px 8px;
+            text-align: center;
+            border-radius: 5px;
+        } 
+
+
+    </style>
 </head>
 <body>
     <main class="container">
@@ -25,8 +53,82 @@
 
     <h1>Members</h1>
 
-        Table of members, points accross CTFs, bounties completed, badges, join date, exec/non exec badges
+        <table id="scoreTable" class="striped">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Username</th>
+                    <th onclick="sortTable(1)">Total Challenges Completed</th>
+                    <th onclick="sortTable(2)">Total points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(usernames|length) %}
+                    <tr>
+                        <td>{{ usernames[i] }} 
 
+                            {% if tags[i]|length > 1 %}
+
+                                {% set tagss = tags[i].split(',') %}
+
+                                {% for t in tagss %}
+                                    {% if t == "Master Locksmith" %}
+                                        <span class="master_locksmith_badge">{{ t }}</span>
+                                    
+                                    {% elif t == "Exec" %}
+                                        <span class="exec_badge">{{ t }}</span>
+
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% endif %}</td>
+                        <td>{{ total_user_challenges[i] }}</td>
+                        <td>{{ points[i] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><a href="/about/badges">More information about badges</a></p>
+    
+        <script>
+            function sortTable(n) {
+                const table = document.getElementById("scoreTable");
+                const rows = Array.from(table.rows).slice(1);  // Get all rows except the header
+                let isAscending = table.rows[0].cells[n].classList.contains("asc");
+                
+                rows.sort((rowA, rowB) => {
+                    const cellA = rowA.cells[n].textContent.trim();
+                    const cellB = rowB.cells[n].textContent.trim();
+    
+                    if (n === 0) { // Sort by Username (alphabetically)
+                        return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                    } else if (n === 1) { // Sort by Total Challenges (numerically)
+                        return isAscending ? parseInt(cellA) - parseInt(cellB) : parseInt(cellB) - parseInt(cellA);
+                    } else { // Sort by Total Points (numerically)
+                        return isAscending ? parseInt(cellA) - parseInt(cellB) : parseInt(cellB) - parseInt(cellA);
+                    }
+                });
+    
+                // Reattach sorted rows to the table body
+                rows.forEach(row => table.appendChild(row));
+    
+                // Toggle the sorting direction
+                table.rows[0].cells[n].classList.toggle("asc", !isAscending);
+                table.rows[0].cells[n].classList.toggle("desc", isAscending);
+
+                /*
+
+                var element = document.getElementById('scoreTable');
+            
+                element.classList.add('striped');
+                
+                var classNames = element.className;
+                console.log(classNames)
+
+                document.getElementById('scoreTable').className = 'striped';
+                */
+            }
+        </script>
     </main>
 </body>
 </html>

@@ -4,6 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import pyotp, os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import markdown
 
 from config import *
 from helpers import *
@@ -40,6 +41,7 @@ class User(UserMixin):
     def verify_otp(self, otp):
         totp = pyotp.TOTP(self.otp_secret)
         return totp.verify(otp)
+
 
 # If the database doesn't exist, create it
 init_db()
@@ -112,8 +114,8 @@ def add_user():
 
         
         # Insert the new user into the database
-        query_db('INSERT INTO users (username, password, otp_secret, lock_permissions, is_admin) VALUES (?, ?, ?, ?, ?)', 
-                 [username, hashed_password, otp_secret, lock_permissions, is_admin])  # Default user is not admin
+        query_db('INSERT INTO users (username, password, otp_secret, lock_permissions, is_admin, tags) VALUES (?, ?, ?, ?, ?, ?)', 
+                 [username, hashed_password, otp_secret, lock_permissions, is_admin, " "])
         
         flash("User added successfully", "success")
         return redirect(url_for('dashboard'))
@@ -289,10 +291,46 @@ def about():
 def resources():
     return render_template('resources.html')
 
+@app.route('/about/badges')
+def badges():
+
+    with open("guides/badges.md", 'r') as file:
+        content = file.readlines()
+            
+        content = ''.join(content)
+
+    html = markdown.markdown(content)
+
+    title = "Badges"
+
+    return render_template('guide.html', content=html, title=title)
+
+
 @app.route('/members')
 @app.route('/users')
 def view_members():
-    return render_template('members.html')
+
+    usernames = []
+    points = []
+    total_user_challenges = []
+    tags = []
+
+    user_challenge_points = get_all_user_challenge_points()
+
+    for user_id, challenge_points in user_challenge_points.items():
+        usernames.append(get_username_by_user_id(user_id))
+        points.append(sum(challenge_points.values()))
+        total_user_challenges.append(len(challenge_points))
+        tag = get_user_tags(get_username_by_user_id(user_id))
+
+        if tag:
+            tags.append(tag)
+        else:
+            tags.append("")
+
+    # Need to pass a list of badges which correspond with usernames, also colors if we want to make them different backrgound colors
+
+    return render_template('members.html', usernames=usernames, points=points, total_user_challenges=total_user_challenges, tags=tags)
 
 #  Start the Flask server
 if __name__ == "__main__":

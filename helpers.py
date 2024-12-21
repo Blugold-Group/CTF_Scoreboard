@@ -14,7 +14,8 @@ def init_db():
             password TEXT NOT NULL,
             otp_secret TEXT NOT NULL,
             lock_permissions TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0
+            is_admin INTEGER DEFAULT 0,
+            tags TEXT
         )
         ''')
 
@@ -248,3 +249,75 @@ def get_username_by_user_id(user_id):
         return result['username']  # Return the username from the row
     else:
         return None  # Return None if no user found
+
+def get_user_ids():
+    # Fetches the list of user IDs from the 'users' table.
+
+    query = "SELECT id FROM users"
+    result = query_db(query)
+    return [row['id'] for row in result]
+
+def get_user_challenge_ids(user_id):
+    # Fetches the list of challenge IDs for a given user ID from the 'user_challenges' table
+
+    query = "SELECT challenge_id FROM user_challenges WHERE user_id = ?"
+    result = query_db(query, args=(user_id,))
+    return [row['challenge_id'] for row in result]
+
+def get_challenge_points(challenge_id):
+    # Fetches the points for a given challenge ID from the 'challenge' table.
+
+    query = "SELECT points FROM challenge WHERE id = ?"
+    result = query_db(query, args=(challenge_id,))
+    return result[0]['points'] if result else None
+
+def get_user_challenge_points(user_id):
+    # For a given user ID, fetch the associated challenge IDs and their corresponding points
+
+    challenge_ids = get_user_challenge_ids(user_id)  # Get the list of challenge IDs for the user
+    challenge_points = {}
+
+    # For each challenge_id, fetch the corresponding points
+    for challenge_id in challenge_ids:
+        points = get_challenge_points(challenge_id)
+        challenge_points[challenge_id] = points
+
+    return challenge_points
+
+def get_all_user_challenge_points():
+    """
+    For all users, fetch the challenge points for each challenge associated with the user.
+    Returns a dictionary of user IDs as keys, and dictionaries of challenge IDs and points as values.
+    """
+    user_ids = get_user_ids()  # Get all user IDs
+    all_user_challenges_points = {}
+
+    # For each user_id, get the associated challenges and their points
+    for user_id in user_ids:
+        challenge_points = get_user_challenge_points(user_id)
+        all_user_challenges_points[user_id] = challenge_points
+
+    return all_user_challenges_points
+
+def count_user_challenges_completed(user_id):
+    query = """
+    SELECT COUNT(*) AS count
+    FROM user_challenges
+    WHERE user_id = ?
+    """
+    result = query_db(query, [user_id], one=True)
+    
+    # Extract the count from the result and return it
+    if result:
+        return result['count']
+    else:
+        return 0  # If no results, return 0
+
+def get_user_tags(username):
+    query = "SELECT tags FROM users WHERE username = ?"
+    result = query_db(query, (username,), one=True)
+    
+    # If a result is found, return the tags value
+    if result:
+        return result['tags']  # 'tags' is the column name, accessible via the row factory
+    return None  # If no result is found, return None
