@@ -90,7 +90,7 @@
     <div class="container">
         <div class="card-container">
             {% for challenge in challenges %}
-                <div class="card" data-target="modal-{{ challenge['id'] }}">
+                <div style="overflow: hidden;" class="card" data-target="modal-{{ challenge['id'] }}">
                     <h3>{{ challenge['name'] }}</h3> 
                     <p>Points: {{ challenge['points'] }}</p>
                     <p>{{ challenge['description'] }}</p>    
