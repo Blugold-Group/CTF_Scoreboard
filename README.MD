@@ -16,6 +16,12 @@ The server is written in python to allow a lower barrier of entry to developing 
 
 ### Badges
 
+To change: `UPDATE users SET tags = 'Exec,Master Locksmith' WHERE username = 'adminn';`
+
+Has to be a comma seperated list, no spaces
+
+Add new badges in the `/about/badges` page and the css of `/members`
+
 ### Database
 
 ## Hall of History
