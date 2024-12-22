@@ -388,6 +388,16 @@ def reset_password():
     # Render the reset password form (GET request)
     return render_template('reset_password.html')
 
+# Display 404.html to any 404 not found errors
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404 # Return status code 404, as well as 404.html
+
+# Display 500.html to any 500 internal server errors
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template('500.html'), 500 # Return status code 500, as well as 500.html
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
