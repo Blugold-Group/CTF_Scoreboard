@@ -13,10 +13,18 @@
             border-radius: 5px;
         }
         .open-ctf {
-            background-color: #0e2358; /* Light green for open CTF */
+            background-color: #0e2358; /* Light blue for open CTF */
         }
+        .closing-soon-badge {
+            background-color: red;
+            color: white;
+            margin-left: 12px;
+            padding: 4px 8px;
+            text-align: center;
+            border-radius: 5px;
+        } 
         .closed-ctf {
-            background-color: #0C1A41; /* Light red for closed CTF */
+            background-color: #0C1A41; /* Dark blue for closed CTF */
             text-decoration: line-through;
         }
         .ctf-header {
@@ -62,6 +70,7 @@
     <div class="ctf open-ctf">
         <div class="ctf-header">
             <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+            {% if ctf in closing_soon_ctfs %}<span class="closing-soon-badge">Closing Soon!</span>{% endif %}
         </div>
         <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
         <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>

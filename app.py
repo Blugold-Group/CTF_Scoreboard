@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pyotp, os
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import markdown
 
 from config import *
@@ -140,6 +140,12 @@ def dashboard():
     # Separate CTFs into open and closed
     open_ctfs = [ctf for ctf in ctfs if ctf['end_date'] >= current_date]
 
+    # Defining "closing soon" as ending within 3 days from current_date
+    # CTF_CLOSING_SOON_DAYS is defined in config.py
+    closing_soon_threshold = (datetime.now() + timedelta(days=CTF_CLOSING_SOON_DAYS)).strftime('%Y-%m-%d')
+    closing_soon_ctfs = [ctf for ctf in open_ctfs if current_date <= ctf['end_date'] <= closing_soon_threshold]
+
+
     bounties = query_db("SELECT * FROM bug_bounties ORDER BY status, id DESC")
 
     is_admin = False
@@ -147,7 +153,7 @@ def dashboard():
         is_admin = current_user.is_admin
 
 
-    return render_template("dashboard.html", open_ctfs=open_ctfs, bounties=bounties, is_admin=is_admin)
+    return render_template("dashboard.html", open_ctfs=open_ctfs, closing_soon_ctfs=closing_soon_ctfs, bounties=bounties, is_admin=is_admin)
 
 @app.route("/logout")
 @login_required
@@ -387,7 +393,6 @@ def reset_password():
 
     # Render the reset password form (GET request)
     return render_template('reset_password.html')
-
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

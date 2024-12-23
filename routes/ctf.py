@@ -1,8 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from helpers import *
+from config import *
 
 ctf_bp = Blueprint('ctf', __name__)
 
@@ -23,11 +24,16 @@ def list_ctfs():
     open_ctfs = [ctf for ctf in ctfs if ctf['end_date'] >= current_date]
     closed_ctfs = [ctf for ctf in ctfs if ctf['end_date'] < current_date]
 
+    # Defining "closing soon" as ending within 3 days from current_date
+    # CTF_CLOSING_SOON_DAYS is defined in config.py
+    closing_soon_threshold = (datetime.now() + timedelta(days=CTF_CLOSING_SOON_DAYS)).strftime('%Y-%m-%d')
+    closing_soon_ctfs = [ctf for ctf in open_ctfs if current_date <= ctf['end_date'] <= closing_soon_threshold]
+
     is_admin = False
     if current_user.is_authenticated:
         is_admin = current_user.is_admin
 
-    return render_template('list_ctfs.html', open_ctfs=open_ctfs, closed_ctfs=closed_ctfs, is_admin=is_admin)
+    return render_template('list_ctfs.html', open_ctfs=open_ctfs, closed_ctfs=closed_ctfs, closing_soon_ctfs=closing_soon_ctfs, is_admin=is_admin)
 
 # Route to create a new CTF
 @ctf_bp.route('/create_ctf', methods=['GET', 'POST'])
@@ -110,6 +116,21 @@ def view_ctf(ctf_id):
 
     challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
 
+    # Getting a list of completed challenges using is_challenge_completed from helper.py
+    # There was a var previously existing called completed_challenges, renamed to completed_challenges_count
+    completed_challenges = set(
+        row['challenge_id']
+        for row in query_db(
+            '''
+            SELECT uc.challenge_id
+            FROM user_challenges uc
+            JOIN challenge c ON uc.challenge_id = c.id
+            WHERE uc.user_id = ? AND c.ctf_id = ? AND uc.completed = 1
+            ''',
+            (current_user.id, ctf_id)
+        )
+    )
+
     name = (query_db("SELECT name FROM ctf WHERE id = ?", (ctf_id,), one=True))['name']
 
     is_admin = False
@@ -128,10 +149,10 @@ def view_ctf(ctf_id):
     #for column in statistics['Total Users Participated'].keys():
     #    print(f"{column}: {statistics['Total Users Participated'][column]}")
     
-    for user_id, completed_challenges in statistics["Completed Challenges by User"].items():
-        #print(f"User {get_username_by_user_id(user_id)}: {completed_challenges} challenges completed")
+    for user_id, completed_challenges_count in statistics["Completed Challenges by User"].items():
+        #print(f"User {get_username_by_user_id(user_id)}: {completed_challenges_count} challenges completed")
         users.append(get_username_by_user_id(user_id))
-        chart_challenges.append(completed_challenges)
+        chart_challenges.append(completed_challenges_count)
     
     for user_id, points in statistics["User Points"].items():
         #print(f"User {get_username_by_user_id(user_id)}: {points} points")
@@ -142,7 +163,7 @@ def view_ctf(ctf_id):
 
     chart_points = [chart_points[users_temp_index_map[value]] for value in users]
 
-    return render_template('view_ctf.html', challenges=challenges, ctf_id=ctf_id, is_admin=is_admin, name=name, users=users, chart_points=chart_points, chart_challenges=chart_challenges)
+    return render_template('view_ctf.html', challenges=challenges, ctf_id=ctf_id, is_admin=is_admin, name=name, users=users, chart_points=chart_points, chart_challenges=chart_challenges, completed_challenges=completed_challenges)
 
 # Route to add a new challenge to a specific CTF
 @ctf_bp.route('/add_challenge/<int:ctf_id>', methods=['GET', 'POST'])
