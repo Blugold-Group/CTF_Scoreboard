@@ -103,9 +103,11 @@
                     {% if is_admin %}    
                     <a href="{{ url_for('ctf.edit_challenge', challenge_id=challenge['id']) }}">Edit</a></li>
                     {% endif %}  
-    
+                    {% if challenge['id'] not in completed_challenges %}
                     <footer><button class="secondary" data-target="modal-{{ challenge['id'] }}" onclick="toggleModal(event)">Submit</button></footer>                
-                    
+                    {% else %}
+                    <footer><p>Challenge already complete!</p></footer>
+                    {% endif %}
     
                     <!-- Modal for each challenge (with unique ID) -->
                     <dialog id="modal-{{ challenge['id'] }}">

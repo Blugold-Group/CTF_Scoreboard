@@ -95,13 +95,20 @@ def init_db():
 
 # Helper function to interact with the database
 def query_db(query, args=(), one=False):
-    with sqlite3.connect(DATABASE) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute(query, args)
-        rv = cursor.fetchall()
-        conn.commit()
-        return (rv[0] if rv else None) if one else rv
+    try:
+        with sqlite3.connect(DATABASE) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(query, args)
+            rv = cursor.fetchall()
+            conn.commit()
+            return (rv[0] if rv else None) if one else rv
+    except sqlite3.OperationalError as e: # added some basic error handling -- EekRats
+        print(f"Database error: {e}")
+        raise
+    except sqlite3.IntegrityError as e:
+        print(f"Inetgrity error: {e}")
+        raise
 
 # Function to add a CTF event
 def add_ctf(name, start_date, end_date):
@@ -177,6 +184,15 @@ def mark_challenge_completed(user_id, challenge_id, submitted_flag):
     query_db(insert_query, (user_id, challenge_id, timestamp))
 
     return "success"
+
+# A function to check whether a user has completed a challenge
+def is_challenge_completed(user_id, challenge_id):
+    result = query_db(
+        "SELECT completed FROM user_challenges WHERE user_id = ? AND challenge_id = ?",
+        (user_id, challenge_id),
+        one=True
+    )
+    return result is not None and result['completed'] == 1
 
 def get_ctf_statistics(ctf_id):
     # 1. Get total number of challenges and total points for the CTF

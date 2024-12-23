@@ -6,6 +6,15 @@
     <link rel="stylesheet" href="/static/css/pico.blue.min.css">
     <link rel="stylesheet" href="/static/css/cards.css">
     <title>Blugold Group</title>
+    <style>
+        .closing-soon-badge {
+            background-color: red;
+            color: white;
+            padding: 2px 4px;
+            text-align: center;
+            border-radius: 5px;
+        } 
+    </style>
 
 </head>
     <body>
@@ -58,7 +67,8 @@
                 <div class="card-container">
                 {% for ctf in open_ctfs[:max_cards] %}
                     <div class="card">
-                        <h3><a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a> <!--<span class="badge">Open</span>--></h3> 
+                        <h3><a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a></h3>
+                        {% if ctf in closing_soon_ctfs %}<span class="closing-soon-badge">Closing Soon!</span>{% endif %}
                         <p><b>Challenges:</b> {{ ctf['challenge_count'] }}</p>
                         <p><b>End date:</b> {{ ctf['end_date'] }}</p>
                     </div>
