@@ -1,60 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-    <title>Resources</title>
+{% extends "base.html" %}
+{% block title %}Resources{% endblock %}
+{% block content %}
+<main class="container">
+    <h2>Security Communities, Forums, and Blogs</h2>
+    <ul>
+        <li><a href="https://krebsonsecurity.com/">Krebs on Security</a> - A blog focused on the latest cybersecurity news, vulnerabilities, and breaches.</li>
+        <li><a href="https://www.sans.org/white-papers/">SANS Reading Room</a> - A collection of white papers covering various aspects of cybersecurity.</li>
+        <li><a href="https://www.reddit.com/r/cybersecurity/">r/cybersecurity</a> - A subreddit where students and professionals discuss cybersecurity news and topics.</li>
+        <li><a href="https://www.reddit.com/r/AskNetsec/">r/AskNetsec</a> - A community for discussions related to ethical hacking and penetration testing.</li>
+        <li><a href="https://www.reddit.com/r/networking/">r/networking</a> - A subreddit dedicated to networking concepts and security discussions.</li>
 
-</head>
-<body>
+    </ul>
 
-    <header class="container">
-    <nav>
-        <ul>
-            <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-        </ul>
-        <ul>
-            <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
-            <li><a href="/ctf">CTFs</a></li>
-            <li><a href="/bounties">Bounties</a></li>
-            <li><a href="/resources">Resources</a></li>
-            <li><a href="/about">About</a></li>
+    <h2>Security Courses</h2>
+    <ul>
+        <li><a href="https://www.edx.org/course/introduction-to-networking-and-security">edX: Introduction to Networking and Security</a> - A course introducing networking concepts and the basics of securing networks.</li>
+        <li><a href="https://www.cybrary.it/course/intro-to-it-and-cybersecurity/">Cybrary: Introduction to IT and Cybersecurity</a> - A free, foundational course covering a broad spectrum of cybersecurity concepts.</li>
+        <li><a href="https://www.coursera.org/specializations/intro-cyber-security">Coursera: Introduction to Cyber Security Specialization</a> - A comprehensive introduction to cybersecurity topics.</li>
+    </ul>
 
-        </ul>
-    </nav>
-    </header>
+    <h2>Web Application Security</h2>
+    <ul>
+        <li><a href="https://portswigger.net/web-security">PortSwigger Web Security Academy</a> - Free, interactive web security training, focusing on vulnerabilities like SQL injection, XSS, etc.</li>
+        <li><a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a> - A list of the most critical web application security risks, regularly updated.</li>
+    </ul>
 
-    <main class="container">
-        <h2>Security Communities, Forums, and Blogs</h2>
-        <ul>
-            <li><a href="https://krebsonsecurity.com/">Krebs on Security</a> - A blog focused on the latest cybersecurity news, vulnerabilities, and breaches.</li>
-            <li><a href="https://www.sans.org/white-papers/">SANS Reading Room</a> - A collection of white papers covering various aspects of cybersecurity.</li>
-            <li><a href="https://www.reddit.com/r/cybersecurity/">r/cybersecurity</a> - A subreddit where students and professionals discuss cybersecurity news and topics.</li>
-            <li><a href="https://www.reddit.com/r/AskNetsec/">r/AskNetsec</a> - A community for discussions related to ethical hacking and penetration testing.</li>
-            <li><a href="https://www.reddit.com/r/networking/">r/networking</a> - A subreddit dedicated to networking concepts and security discussions.</li>
+    <h2>Online Hacking Labs</h2>
+    <ul>
+        <li><a href="https://tryhackme.com/">TryHackMe</a> - Interactive learning platform offering beginner to advanced ethical hacking challenges.</li>
+        <li><a href="https://www.hackthebox.eu/">Hack The Box</a> - A penetration testing and ethical hacking platform with real-world challenges.</li>
+    </ul>
 
-        </ul>
-
-        <h2>Security Courses</h2>
-        <ul>
-            <li><a href="https://www.edx.org/course/introduction-to-networking-and-security">edX: Introduction to Networking and Security</a> - A course introducing networking concepts and the basics of securing networks.</li>
-            <li><a href="https://www.cybrary.it/course/intro-to-it-and-cybersecurity/">Cybrary: Introduction to IT and Cybersecurity</a> - A free, foundational course covering a broad spectrum of cybersecurity concepts.</li>
-            <li><a href="https://www.coursera.org/specializations/intro-cyber-security">Coursera: Introduction to Cyber Security Specialization</a> - A comprehensive introduction to cybersecurity topics.</li>
-        </ul>
-
-        <h2>Web Application Security</h2>
-        <ul>
-            <li><a href="https://portswigger.net/web-security">PortSwigger Web Security Academy</a> - Free, interactive web security training, focusing on vulnerabilities like SQL injection, XSS, etc.</li>
-            <li><a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a> - A list of the most critical web application security risks, regularly updated.</li>
-        </ul>
-
-        <h2>Online Hacking Labs</h2>
-        <ul>
-            <li><a href="https://tryhackme.com/">TryHackMe</a> - Interactive learning platform offering beginner to advanced ethical hacking challenges.</li>
-            <li><a href="https://www.hackthebox.eu/">Hack The Box</a> - A penetration testing and ethical hacking platform with real-world challenges.</li>
-        </ul>
-
-    </main>
-</body>
-</html>
+</main>
+{% endblock %}

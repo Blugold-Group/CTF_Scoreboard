@@ -5,6 +5,8 @@ import pyotp, os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import markdown
+import logging # to log user logins
+from logging.handlers import RotatingFileHandler
 
 from config import *
 from helpers import *
@@ -18,6 +20,26 @@ app.register_blueprint(ctf_bp)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setLevel(logging.INFO)
+
+# Using rotating logs so that our log file doesn't get too big/unmanageable. Will overwrite old logs
+handler = RotatingFileHandler(LOG_FILE, maxBytes=1000000, backupCount=10)
+
+# Setting up user login logging. LOG_FILE defined in config.py
+# RotatingFileHandler dependency can be removed by removing the 'handlers' arg and adding 'filename=LOG_FILE'
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[handler])
+
+werkzeug_logger = logging.getLogger('werkzeug')
+
+# filtering out HTTP requests for static files
+class IgnoreStaticFilesFilter(logging.Filter):
+    def filter(self, record):
+        ignored_paths = ["/static/", "/favicon.ico", "HTTP/1.1"]
+        return not any(path in record.getMessage() for path in ignored_paths)
+
+werkzeug_logger.addFilter(IgnoreStaticFilesFilter())
 
 # Set up the user loader for Flask-Login
 @login_manager.user_loader
@@ -83,9 +105,19 @@ def login():
             #    flash("Invalid 2FA code", "error")
 
             login_user(user)
+
+            # log a login attempt with a different message depending on is_admin
+            if current_user.is_admin:
+                logging.info(f"Admin logged in: {username} (ID: {user.id})")
+            else:
+                logging.info(f"User logged in: {username} (ID: {user.id})")
+
             return redirect(url_for('dashboard'))
         else:
             flash("Invalid username or password", "error")
+
+            # log failed login attempt
+            logging.warning(f"Failed login attempt: {username}")
 
     return render_template("login.html")
 
@@ -118,6 +150,13 @@ def add_user():
                  [username, hashed_password, otp_secret, lock_permissions, is_admin, " "])
         
         flash("User added successfully", "success")
+        
+        # log a created user. use different log levels depending on if created account is_admin
+        if is_admin:
+            logging.warning(f"ADMIN USER CREATED: {username} BY USER: {current_user.username} (ID: {current_user.id}) from IP addr: {request.remote_addr}")
+        else:
+            logging.info(f"User created: {username} by user: {current_user.username} (ID: {current_user.id})")
+
         return redirect(url_for('dashboard'))
 
     return render_template("add_user.html")
@@ -158,6 +197,7 @@ def dashboard():
 @app.route("/logout")
 @login_required
 def logout():
+    logging.info(f"User logged out: {current_user.username} (ID: {current_user.id})")
     logout_user()
     return redirect(url_for("login"))
 
@@ -180,16 +220,19 @@ def add_activity():
 @login_required
 def admin_dashboard():
     if not current_user.is_admin:
+        logging.warning(f"Non-admin user attempted to access admin-only page: {current_user.username} (ID: {current_user.id})")
         return redirect(url_for('dashboard'))
 
     users = query_db('SELECT * FROM users')
     activities = query_db('SELECT * FROM activities')
+    logging.info(f"User accessed admin-only page: {current_user.username} (ID: {current_user.id})")
     return render_template("admin.html", users=users, activities=activities)
 
 @app.route("/edit_user/<int:user_id>", methods=["GET", "POST"])
 @login_required
 def edit_user(user_id):
     if not current_user.is_admin:
+        logging.warning(f"Non-admin user attempted to access admin-only page: {current_user.username} (ID: {current_user.id})")
         return redirect(url_for('dashboard'))
 
     user_data = query_db('SELECT * FROM users WHERE id = ?', [user_id], one=True)
@@ -200,7 +243,7 @@ def edit_user(user_id):
         query_db('UPDATE users SET username = ?, password = ? WHERE id = ?', [username, new_password_hash, user_id])
         flash("User updated successfully", "success")
         return redirect(url_for('dashboard'))
-
+    logging.info(f"User accessed admin-only page: {current_user.username} (ID: {current_user.id})")
     return render_template("edit_user.html", user=user_data)
 
 @app.route("/scoreboard")
@@ -341,6 +384,8 @@ def view_members():
 def admin_reset_password():
 
     if not current_user.is_admin:
+        logging.warning(f"Non-admin user attempted to access admin-only page: {current_user.username} (ID: {current_user.id})")
+        logging.warning(f"{current_user.username} attempted to access /admin_reset_password!")
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
@@ -362,6 +407,7 @@ def admin_reset_password():
             flash('User not found!', 'error')
 
     # Render the reset password form (GET request)
+    logging.info(f"User accessed admin-only page: {current_user.username} (ID: {current_user.id})")
     return render_template('admin_reset_password.html')
 
 @app.route('/reset_password', methods=['GET', 'POST'])
