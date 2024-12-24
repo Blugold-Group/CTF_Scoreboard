@@ -11,7 +11,7 @@ from helpers import *
 from routes.ctf import ctf_bp
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key'
+app.config['SECRET_KEY'] = '46ytQ8iUgatuT96t8gI97uigGiyFyiZYygewoNnmTZ47JBkauA98HOuia8'
 
 # Register blueprints (see readme for more info)
 app.register_blueprint(ctf_bp)
@@ -395,4 +395,4 @@ def reset_password():
     return render_template('reset_password.html')
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=False, host="0.0.0.0")
