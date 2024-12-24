@@ -1,46 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-    <title>Edit Challenge</title>
-</head>
-<body>
-    <main class="container">
+{% extends "base.html" %}
+{% block title %}Edit CTF Challenge{% endblock %}
+{% block content %}
+<h1>Edit Challenge</h1>
+<form method="POST">
+    <label for="name">Challenge Name:</label><br>
+    <input type="text" id="name" name="name" value="{{ challenge['name'] }}" required><br><br>
 
-        <nav>
-            <ul>
-                <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-            </ul>
-            <ul>
-                <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
-                <li><a href="/ctf">CTFs</a></li>
-                <li><a href="/bounties">Bounties</a></li>
-                <li><a href="/resources">Resources</a></li>
-                <li><a href="/about">About</a></li>
- 
-            </ul>
-        </nav>
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description">{{ challenge['description'] }}</textarea><br><br>
 
-    <h1>Edit Challenge</h1>
-    <form method="POST">
-        <label for="name">Challenge Name:</label><br>
-        <input type="text" id="name" name="name" value="{{ challenge['name'] }}" required><br><br>
+    <label for="points">Points:</label><br>
+    <input type="number" id="points" name="points" value="{{ challenge['points'] }}" required><br><br>
 
-        <label for="description">Description:</label><br>
-        <textarea id="description" name="description">{{ challenge['description'] }}</textarea><br><br>
+    <label for="flag">Flag:</label><br>
+    <input type="text" id="flag" name="flag" value="{{ challenge['flag'] }}" required><br><br>
 
-        <label for="points">Points:</label><br>
-        <input type="number" id="points" name="points" value="{{ challenge['points'] }}" required><br><br>
-
-        <label for="flag">Flag:</label><br>
-        <input type="text" id="flag" name="flag" value="{{ challenge['flag'] }}" required><br><br>
-
-        <button type="submit">Update Challenge</button>
-    </form>
-    <br>
-    <a href="{{ url_for('ctf.view_ctf', ctf_id=challenge['ctf_id']) }}">Back to CTF</a>
-    </main>
-</body>
-</html>
+    <button type="submit">Update Challenge</button>
+</form>
+<br>
+<a href="{{ url_for('ctf.view_ctf', ctf_id=challenge['ctf_id']) }}">Back to CTF</a>
+{% endblock %}

@@ -1,89 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-    <link rel="stylesheet" href="/static/css/cards.css">
-    <title>Blugold Group</title>
-    <style>
-        .closing-soon-badge {
-            background-color: red;
-            color: white;
-            padding: 2px 4px;
-            text-align: center;
-            border-radius: 5px;
-        } 
-    </style>
+{% extends "base.html" %}
 
-</head>
-    <body>
-        <main class="container">
+{% block style %}
+<style>
+    .closing-soon-badge {
+        background-color: red;
+        color: white;
+        padding: 2px 4px;
+        text-align: center;
+        border-radius: 5px;
+    } 
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Open Bounties</h1>
+    <div class="card-container">
+    {% set max_cards = 4 %}
+    {% for bounty in bounties[:max_cards] %}
+    {% if bounty.status == 'open' %}
+        <div class="card">
+            <h3>{{ bounty.title }} <!--<span class="badge">Open</span>--></h3> 
+            <p>{{ bounty.description }}</p>
 
-            <nav>
-                <ul>
-                    <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-                </ul>
-                <ul>
-                    <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
-                    <li><a href="/ctf">CTFs</a></li>
-                    <li><a href="/bounties">Bounties</a></li>
-                    <li><a href="/resources">Resources</a></li>
-                    <li><a href="/about">About</a></li>
-     
-                </ul>
-            </nav>
+            <footer><p><b>Prize: </b>{{ bounty.prize }}</p></footer>
+        </div>
+    {% endif %}
 
-            <div class="container">
-                <h1>Open Bounties</h1>
-                <div class="card-container">
-                {% set max_cards = 4 %}
-                {% for bounty in bounties[:max_cards] %}
-                {% if bounty.status == 'open' %}
-                    <div class="card">
-                        <h3>{{ bounty.title }} <!--<span class="badge">Open</span>--></h3> 
-                        <p>{{ bounty.description }}</p>
+    {% endfor %}
+    <!--
+    <div class="card">
+        <h3><a class="contrast" href="{{ url_for('bounties') }}">All Bounties</a></h3>
+        <a class="contrast" href="{{ url_for('bounties') }}">See All Bounties</a>
+    </div>
+    -->
 
-                        <footer><p><b>Prize: </b>{{ bounty.prize }}</p></footer>
-                    </div>
-                {% endif %}
+    </div>
+</div>
 
-                {% endfor %}
-                <!--
-                <div class="card">
-                    <h3><a class="contrast" href="{{ url_for('bounties') }}">All Bounties</a></h3>
-                    <a class="contrast" href="{{ url_for('bounties') }}">See All Bounties</a>
-                </div>
-                -->
+<br>
+<div class="container">
+    <h1>Open CTFs</h1>
+    <div class="card-container">
+    {% for ctf in open_ctfs[:max_cards] %}
+        <div class="card">
+            <h3><a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a></h3>
+            {% if ctf in closing_soon_ctfs %}<span class="closing-soon-badge">Closing Soon!</span>{% endif %}
+            <p><b>Challenges:</b> {{ ctf['challenge_count'] }}</p>
+            <p><b>End date:</b> {{ ctf['end_date'] }}</p>
+        </div>
+    {% endfor %}
 
-                </div>
-            </div>
+    <!--
+    <div class="card">
+        <h3><a class="contrast" href="{{ url_for('ctf.list_ctfs') }}">All CTFs</a></h3>
+        <a class="contrast" href="{{ url_for('ctf.list_ctfs') }}">See all Capture the Flags</a>
+    </div>
+    -->
 
-            <br>
-            <div class="container">
-                <!--<h1>Want to add a badge saying 'closing soon' if the end date is within a week</h1>-->
-
-                <h1>Open CTFs</h1>
-                <div class="card-container">
-                {% for ctf in open_ctfs[:max_cards] %}
-                    <div class="card">
-                        <h3><a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a></h3>
-                        {% if ctf in closing_soon_ctfs %}<span class="closing-soon-badge">Closing Soon!</span>{% endif %}
-                        <p><b>Challenges:</b> {{ ctf['challenge_count'] }}</p>
-                        <p><b>End date:</b> {{ ctf['end_date'] }}</p>
-                    </div>
-                {% endfor %}
-
-                <!--
-                <div class="card">
-                    <h3><a class="contrast" href="{{ url_for('ctf.list_ctfs') }}">All CTFs</a></h3>
-                    <a class="contrast" href="{{ url_for('ctf.list_ctfs') }}">See all Capture the Flags</a>
-                </div>
-                -->
-
-                </div>
-            </div>
-
-        </main>
-    </body>
-</html>
+    </div>
+</div>
+{% endblock %}
