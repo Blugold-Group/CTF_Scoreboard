@@ -44,3 +44,12 @@ To start the server (**in debug mode**), first ensure Python and Pip are install
 Run `pip install -r requirements.txt` to install packages required for the server to run. Finally, run `python app.py`. The site should be accessible at any of the given addresses.
 
 An initial admin user must be created. This can be done by directly modifying the new `database.db` file. Add a record to the `users` table. The password field should contain a hashed password, generated using [werkzeug.security.generate_password_hash()](https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash). A Python script can accomplish this, such as [this one](https://github.com/EekRats/ctf_hasher/blob/main/ctf_hasher.py). The `is_admin` column should be set to `1`.
+
+## Important Files
+
+Some files/directories of particular importance include:
+* `app.py` -- Main file defining Flask `route()`s. These call functions when a client navigates to a specific URL. For our use case, this typically means returning `render_template()` that renders a .html file.
+* `/templates` -- This directory contains all of the .html files referenced by various `route()`s.
+* `helpers.py` -- Python script containing definitions for a variety of helper functions used elsewhere
+* `config.py` -- Contains variable definitions for various configurable things. Add definitions here when at all possible so that the specifics of this site can be changed as needed in the future.
+* `base.html` -- This contains the universal page header, navbar, logo, etc. In the child .html, you may define `{% block %}`s for `content`, `style`, and `title`. All pages should use `{% extends "base.html" %}` to inherit base.html. The `style` block can be used to set not only the style tag, but any other tags that must be included in the header such as `<script>`

@@ -1,94 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-    <title>Blugold CTFs</title>
-    <style>
-        .ctf {
-            padding: 10px;
-            margin-bottom: 10px;
-            /*border: 1px solid #ccc;*/
-            border-radius: 5px;
-        }
-        .open-ctf {
-            background-color: #0e2358; /* Light blue for open CTF */
-        }
-        .closing-soon-badge {
-            background-color: red;
-            color: white;
-            margin-left: 12px;
-            padding: 4px 8px;
-            text-align: center;
-            border-radius: 5px;
-        } 
-        .closed-ctf {
-            background-color: #0C1A41; /* Dark blue for closed CTF */
-            text-decoration: line-through;
-        }
-        .ctf-header {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        .ctf-status {
-            font-size: 0.9em;
-            /*color: #888;*/
-        }
-        .challenge-count {
-            font-size: 0.9em;
-            /*color: #444;*/
-        }
-    </style>
-</head>
-<body>
-    <main class="container">
+{% extends "base.html" %}
+{% block title %}Blugold Group CTFs{% endblock %}
+{% block style %}
+<style>
+    .ctf {
+        padding: 10px;
+        margin-bottom: 10px;
+        /*border: 1px solid #ccc;*/
+        border-radius: 5px;
+    }
+    .open-ctf {
+        background-color: #0e2358; /* Light blue for open CTF */
+    }
+    .closing-soon-badge {
+        background-color: red;
+        color: white;
+        margin-left: 12px;
+        padding: 4px 8px;
+        text-align: center;
+        border-radius: 5px;
+    } 
+    .closed-ctf {
+        background-color: #0C1A41; /* Dark blue for closed CTF */
+        text-decoration: line-through;
+    }
+    .ctf-header {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    .ctf-status {
+        font-size: 0.9em;
+        /*color: #888;*/
+    }
+    .challenge-count {
+        font-size: 0.9em;
+        /*color: #444;*/
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>All Capture the Flags</h1>
+<p>Capture The Flag (CTF) competitions are exciting challenges where you solve puzzles and problems related to cybersecurity to "capture" hidden flags. These events help you learn about different areas of security, like coding, finding vulnerabilities, and protecting systems, all while competing against others. CTFs are a fun way to improve your skills, work in teams, and get a hands-on feel for the real-world challenges that cybersecurity professionals face.</p>
 
-        <nav>
-            <ul>
-                <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-            </ul>
-            <ul>
-                <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
-                <li><a href="/ctf">CTFs</a></li>
-                <li><a href="/bounties">Bounties</a></li>
-                <li><a href="/resources">Resources</a></li>
-                <li><a href="/about">About</a></li>
- 
-            </ul>
-        </nav>
+{% if is_admin %}
+<a href="{{ url_for('ctf.create_ctf')}}">Add a CTF</a>
+{% endif %}  
 
-    <h1>All Capture the Flags</h1>
-    <p>Capture The Flag (CTF) competitions are exciting challenges where you solve puzzles and problems related to cybersecurity to "capture" hidden flags. These events help you learn about different areas of security, like coding, finding vulnerabilities, and protecting systems, all while competing against others. CTFs are a fun way to improve your skills, work in teams, and get a hands-on feel for the real-world challenges that cybersecurity professionals face.</p>
-
-    {% if is_admin %}
-    <a href="{{ url_for('ctf.create_ctf')}}">Add a CTF</a>
-    {% endif %}  
-
-    <h2>Open CTFs</h2>
-    {% for ctf in open_ctfs %}
-    <div class="ctf open-ctf">
-        <div class="ctf-header">
-            <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
-            {% if ctf in closing_soon_ctfs %}<span class="closing-soon-badge">Closing Soon!</span>{% endif %}
-        </div>
-        <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
-        <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
+<h2>Open CTFs</h2>
+{% for ctf in open_ctfs %}
+<div class="ctf open-ctf">
+    <div class="ctf-header">
+        <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
+        {% if ctf in closing_soon_ctfs %}<span class="closing-soon-badge">Closing Soon!</span>{% endif %}
     </div>
-    {% endfor %}
+    <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
+    <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
+</div>
+{% endfor %}
 
-    <h2>Closed CTFs</h2>
-    {% for ctf in closed_ctfs %}
-    <div class="ctf closed-ctf">
-        <div class="ctf-header">
-            <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
-        </div>
-        <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
-        <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
-        <div class="ctf-status">This CTF is closed</div>
+<h2>Closed CTFs</h2>
+{% for ctf in closed_ctfs %}
+<div class="ctf closed-ctf">
+    <div class="ctf-header">
+        <a class="contrast" href="{{ url_for('ctf.view_ctf', ctf_id=ctf['id']) }}">{{ ctf['name'] }}</a>
     </div>
-    {% endfor %}
-
-    </main>
-</body>
-</html>
+    <div class="ctf-status">Start Date: {{ ctf['start_date'] }} | End Date: {{ ctf['end_date'] }}</div>
+    <div class="challenge-count">Challenges: {{ ctf['challenge_count'] }}</div>
+    <div class="ctf-status">This CTF is closed</div>
+</div>
+{% endfor %}
+{% endblock %}

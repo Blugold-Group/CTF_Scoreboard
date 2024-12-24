@@ -16,9 +16,6 @@
 
 - Add discord handles for users or real names
 
-- Make Flask inherit base files https://stackoverflow.com/questions/34378023/flask-template-inheritance-tutorial
-    - Let's us have a base file with header, js/css imports, and flash code without having to rewrite it for each file
-
 - Mark which flags have been gotten already
 
 - Need a way to make a user an admin or not

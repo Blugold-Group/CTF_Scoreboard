@@ -1,53 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/static/js/alert.js"></script>
-    <link rel="stylesheet" href="/static/css/alert.css">
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-    <title>Scoreboard</title>
-</head>
-<body>
-    <main class="container">
+{% extends "base.html" %}
+{% block title %}Blugold Group Login{% endblock %}
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert {{  category }}" id="alert">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert {{  category }}" id="alert">
-
-                        <span class="closebtn" onclick="closeAlert();">&times;</span> 
-                        <strong>{{  message }}</strong>
-                        <!-- Countdown Progress Bar -->
-                        <div class="progress-container">
-                        <div class="progress-bar" id="progress-bar"></div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <nav>
-            <ul>
-                <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-            </ul>
-            <ul>
-                <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
-                <li><a href="/ctf">CTFs</a></li>
-                <li><a href="/bounties">Bounties</a></li>
-                <li><a href="/resources">Resources</a></li>
-                <li><a href="/about">About</a></li>
- 
-            </ul>
-        </nav>
-
-    <h1>Login</h1>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username">
-        <input type="password" name="password" placeholder="Password">
-        <input type="text" name="otp" placeholder="2FA Code">
-        <button type="submit">Login</button>
-    </form>
-    </main>
-</body>
-</html>
+                <span class="closebtn" onclick="closeAlert();">&times;</span> 
+                <strong>{{  message }}</strong>
+                <!-- Countdown Progress Bar -->
+                <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    
+<h1>Login</h1>
+<form method="POST">
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    <input type="text" name="otp" placeholder="2FA Code">
+    <button type="submit">Login</button>
+</form>
+{% endblock %}

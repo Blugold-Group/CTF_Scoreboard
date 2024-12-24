@@ -1,45 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Activity</title>
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
-</head>
-<body>
-    <main class="container">
-
-        <nav>
-            <ul>
-                <li><a href="/"><img style="height:15%;width:23%;" src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-            </ul>
-            <ul>
-                <li><a href="https://discord.gg/9JYZCTFz">Discord</a></li>
-                <li><a href="/ctf">CTFs</a></li>
-                <li><a href="/bounties">Bounties</a></li>
-                <li><a href="/resources">Resources</a></li>
-                <li><a href="/about">About</a></li>
- 
-            </ul>
-        </nav>
-
-    <h1>Add Activity</h1>
-    <form method="POST">
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required>
-        <br>
-        <label for="lock_permissions">Lock Permissions:</label>
-        <input type="text" name="lock_permissions" id="lock_permissions" required>
-        <br>
-        <label for="is_admin">Is this user an admin?:</label>
-        <input type="checkbox" name="is_admin" id="is_admin">
-        <br>
-        <button type="submit">Add User</button>
-    </form>
+{% extends "base.html" %}
+{% block title %}Add Activity{% endblock %}
+{% block content %}
+<h1>Add Activity</h1>
+<form method="POST">
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required>
     <br>
-    <a href="{{ url_for('admin_dashboard') }}">Back to Admin Dashboard</a>
-    </main>
-</body>
-</html>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+    <br>
+    <label for="lock_permissions">Lock Permissions:</label>
+    <input type="text" name="lock_permissions" id="lock_permissions" required>
+    <br>
+    <label for="is_admin">Is this user an admin?:</label>
+    <input type="checkbox" name="is_admin" id="is_admin">
+    <br>
+    <button type="submit">Add User</button>
+</form>
+<br>
+<a href="{{ url_for('admin_dashboard') }}">Back to Admin Dashboard</a>
+{% endblock %}
