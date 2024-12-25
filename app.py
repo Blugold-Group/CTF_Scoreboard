@@ -1,11 +1,8 @@
-import sqlite3
 from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import pyotp, os
+import pyotp, os, secrets, markdown, sqlite3, logging
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
-import markdown
-import logging # to log user logins
 from logging.handlers import RotatingFileHandler
 
 from config import *
@@ -13,7 +10,7 @@ from helpers import *
 from routes.ctf import ctf_bp
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '46ytQ8iUgatuT96t8gI97uigGiyFyiZYygewoNnmTZ47JBkauA98HOuia8'
+app.config['SECRET_KEY'] = secrets.token_urlsafe(64)
 
 # Register blueprints (see readme for more info)
 app.register_blueprint(ctf_bp)
@@ -204,8 +201,8 @@ def logout():
 @app.route("/add_activity", methods=["GET", "POST"])
 @login_required
 def add_activity():
-    #if not current_user.is_admin:
-    #    return redirect(url_for('dashboard'))
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
 
     if request.method == "POST":
         name = request.form['name']
