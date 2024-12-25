@@ -201,8 +201,8 @@ def logout():
 @app.route("/add_activity", methods=["GET", "POST"])
 @login_required
 def add_activity():
-    #if not current_user.is_admin:
-    #    return redirect(url_for('dashboard'))
+    if not current_user.is_admin:
+        return redirect(url_for('dashboard'))
 
     if request.method == "POST":
         name = request.form['name']

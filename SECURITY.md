@@ -1,10 +1,10 @@
 # Security Policy
 
-This website is NOT in scope for any CTF challenge the cybersecurity hosts unless explicitly declared.
+This website is NOT in scope for any challenge or activity the cybersecurity club hosts unless explicitly declared.
 
 That being said, we are a cybersecurity club, so people in the community and the club are encouraged to look for vulnerabilities.
 
-You are not allowed to attack the live server with real user data in it. For red teaming, clone and run this repository within your own environment with your own spoof data.
+You are not allowed to attack the live server with real user data. Members and the community are encouraged to responsibly red team, so clone and run this repository within your own environment with your own spoof data.
 
 ## Reporting a Vulnerability
 
