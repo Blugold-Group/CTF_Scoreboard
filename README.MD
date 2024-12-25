@@ -45,6 +45,11 @@ Run `pip install -r requirements.txt` to install packages required for the serve
 
 An initial admin user must be created. This can be done by directly modifying the new `database.db` file. Add a record to the `users` table. The password field should contain a hashed password, generated using [werkzeug.security.generate_password_hash()](https://werkzeug.palletsprojects.com/en/stable/utils/#werkzeug.security.generate_password_hash). A Python script can accomplish this, such as [this one](https://github.com/EekRats/ctf_hasher/blob/main/ctf_hasher.py). The `is_admin` column should be set to `1`.
 
+Two environment variables must be defined:
+* FLASK_SECRET_KEY (this is currently hard-coded but may move in the future!)
+* DISCORD_CLIENT_SECRET
+They can be defined using `export VARIABLE=VALUE`. Ensure it is defined in the same environment that `app.py` is executed in.
+
 ## Important Files
 
 Some files/directories of particular importance include:

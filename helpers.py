@@ -15,7 +15,8 @@ def init_db():
             otp_secret TEXT NOT NULL,
             lock_permissions TEXT NOT NULL,
             is_admin INTEGER DEFAULT 0,
-            tags TEXT
+            tags TEXT,
+            discord_handle TEXT
         )
         ''')
 

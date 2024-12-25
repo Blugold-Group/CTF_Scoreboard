@@ -5,7 +5,8 @@ import pyotp, os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import markdown
-import logging # to log user logins
+import logging
+import requests
 from logging.handlers import RotatingFileHandler
 
 from config import *
@@ -105,6 +106,7 @@ def login():
             #    flash("Invalid 2FA code", "error")
 
             login_user(user)
+            session["user_id"] = user.id
 
             # log a login attempt with a different message depending on is_admin
             if current_user.is_admin:
@@ -363,6 +365,7 @@ def view_members():
     points = []
     total_user_challenges = []
     tags = []
+    discord_handles = []
 
     user_challenge_points = get_all_user_challenge_points()
 
@@ -377,7 +380,14 @@ def view_members():
         else:
             tags.append("")
 
-    return render_template('members.html', usernames=usernames, points=points, total_user_challenges=total_user_challenges, tags=tags)
+        discord_handle = query_db('SELECT discord_handle FROM users WHERE id = ?', [user_id], one=True)
+
+        if discord_handle and discord_handle[0]:
+            discord_handles.append(discord_handle[0])
+        else:
+            discord_handles.append("")
+
+    return render_template('members.html', usernames=usernames, points=points, total_user_challenges=total_user_challenges, tags=tags, discord_handles=discord_handles)
 
 @app.route('/admin_reset_password', methods=['GET', 'POST'])
 @login_required
@@ -439,6 +449,58 @@ def reset_password():
 
     # Render the reset password form (GET request)
     return render_template('reset_password.html')
+
+# callback route handles response from discord
+@app.route('/discord/callback')
+def discord_callback():
+    try:
+        code = request.args.get('code')
+        if not code:
+            return "Discord authorization failed: No code provided", 400
+
+        # Contructing data to send to discord to get a token
+        data = {
+            "client_id": DISCORD_CLIENT_ID,
+            "client_secret": os.environ.get("DISCORD_CLIENT_SECRET"),
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": DISCORD_REDIRECT_URI,
+        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        response = requests.post(f"{DISCORD_API_ENDPOINT}/oauth2/token", data=data, headers=headers)
+
+        if response.status_code != 200:
+            return f"Failed to retrieve access token: {response.text}", 400
+
+        token = response.json()["access_token"]
+
+        # Get user info
+        headers = {"Authorization": f"Bearer {token}"}
+        user_info = requests.get(f"{DISCORD_API_ENDPOINT}/users/@me", headers=headers).json()
+
+        discord_handle = user_info['username']
+        if user_info['discriminator'] != '0':
+            discord_handle = f"{user_info['username']}#{user_info['discriminator']}"
+        user_id = session.get("user_id")
+
+        query_db("UPDATE users SET discord_handle = ? WHERE id = ?", (discord_handle, user_id))
+
+        return redirect(url_for("dashboard"))
+    except Exception as e:
+        return f"An error occurred: {str(e)}", 500
+
+@app.route("/connect_discord")
+@login_required
+def connect_discord():
+    discord_auth_url = (
+        f"https://discord.com/oauth2/authorize"
+        f"?client_id={DISCORD_CLIENT_ID}"
+        f"&redirect_uri={DISCORD_REDIRECT_URI}"
+        f"&response_type=code"
+        f"&scope=identify"
+    )
+    print("Generated Discord oauth2 url:", discord_auth_url)
+    return redirect(discord_auth_url)
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
