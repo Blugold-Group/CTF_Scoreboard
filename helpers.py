@@ -16,7 +16,7 @@ def init_db():
             lock_permissions TEXT NOT NULL,
             is_admin INTEGER DEFAULT 0,
             tags TEXT,
-            discord_handle TEXT
+            discord_handle TEXT UNIQUE
         )
         ''')
 

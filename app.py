@@ -4,6 +4,7 @@ import pyotp, os, secrets, markdown, sqlite3, logging, requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
 
 from config import *
 from helpers import *
@@ -475,10 +476,15 @@ def discord_callback():
         user_info = requests.get(f"{DISCORD_API_ENDPOINT}/users/@me", headers=headers).json()
 
         discord_handle = user_info['username']
-        if user_info['discriminator'] != '0':
+        #if user_info['discriminator'] != '0':
             discord_handle = f"{user_info['username']}#{user_info['discriminator']}"
-        user_id = session.get("user_id")
+        
+        # Check to ensure discord_handle is unique
+        existing_user = query_db("SELECT id FROM users WHERE discord_handle = ?", (discord_handle,), one=True)
+        if existing_user:
+            return "This Discord account is already linked to another user.", 400
 
+        user_id = session.get("user_id")
         query_db("UPDATE users SET discord_handle = ? WHERE id = ?", (discord_handle, user_id))
 
         return redirect(url_for("dashboard"))
@@ -497,6 +503,29 @@ def connect_discord():
     )
     print("Generated Discord oauth2 url:", discord_auth_url)
     return redirect(discord_auth_url)
+
+@app.route('/api/totalpoints', methods=['GET'])
+def get_points():
+    discord_handle = request.args.get('discord_handle')
+    if not discord_handle:
+        return {'error': 'Discord handle is required'}, 400
+    
+    # get user_id from discord_handle
+    user = query_db('SELECT id FROM users WHERE discord_handle = ?', (discord_handle,), one=True)
+    if not user:
+        return {'error': 'No user found for the given Disocrd handle'}, 404
+
+    user_id = user['id']
+    challenge_points = get_user_challenge_points(user_id)
+
+    if challenge_points:
+        total_points = sum(challenge_points.values())
+    else:
+        total_points = 0
+
+    return {'discord_handle': discord_handle,
+            'total_points': total_points}, 200
+
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
