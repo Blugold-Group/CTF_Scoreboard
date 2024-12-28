@@ -13,6 +13,12 @@ from routes.ctf import ctf_bp
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_urlsafe(64)
 
+load_dotenv()
+
+# API key defined in .env. Must match key defined in the Discord bot's .env file.
+blu_api_key = os.getenv('BLU_API_KEY')
+DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
+
 # Register blueprints (see readme for more info)
 app.register_blueprint(ctf_bp)
 
@@ -447,9 +453,10 @@ def reset_password():
     # Render the reset password form (GET request)
     return render_template('reset_password.html')
 
-# callback route handles response from discord
+# The Discord API will communicate with this route during authorization
 @app.route('/discord/callback')
 def discord_callback():
+
     try:
         code = request.args.get('code')
         if not code:
@@ -458,7 +465,7 @@ def discord_callback():
         # Contructing data to send to discord to get a token
         data = {
             "client_id": DISCORD_CLIENT_ID,
-            "client_secret": os.environ.get("DISCORD_CLIENT_SECRET"),
+            "client_secret": DISCORD_CLIENT_SECRET,
             "grant_type": "authorization_code",
             "code": code,
             "redirect_uri": DISCORD_REDIRECT_URI,
@@ -475,9 +482,9 @@ def discord_callback():
         headers = {"Authorization": f"Bearer {token}"}
         user_info = requests.get(f"{DISCORD_API_ENDPOINT}/users/@me", headers=headers).json()
 
-        discord_handle = user_info['username']
-        #if user_info['discriminator'] != '0':
-            discord_handle = f"{user_info['username']}#{user_info['discriminator']}"
+        # Because of how things are setup right now, make sure to always include the discriminator (e.g. #1234)...
+        # despite Discord no longer fully maintaining discriminators. For most accounts, it will be #0.
+        discord_handle = f"{user_info['username']}#{user_info['discriminator']}"
         
         # Check to ensure discord_handle is unique
         existing_user = query_db("SELECT id FROM users WHERE discord_handle = ?", (discord_handle,), one=True)
@@ -491,9 +498,12 @@ def discord_callback():
     except Exception as e:
         return f"An error occurred: {str(e)}", 500
 
+# This is an end-user accessible route that uses Discord OAuth2 to link a Discord account.
+# After the user authorizes through Discord, the remote API communicates with our /discord/callback.
 @app.route("/connect_discord")
 @login_required
 def connect_discord():
+
     discord_auth_url = (
         f"https://discord.com/oauth2/authorize"
         f"?client_id={DISCORD_CLIENT_ID}"
@@ -504,8 +514,9 @@ def connect_discord():
     print("Generated Discord oauth2 url:", discord_auth_url)
     return redirect(discord_auth_url)
 
+#curl -G "http://127.0.0.1:5000/api/totalpoints" --data-urlencode "discord_handle=testeekrats#0"
 @app.route('/api/totalpoints', methods=['GET'])
-def get_points():
+def api_get_points():
     discord_handle = request.args.get('discord_handle')
     if not discord_handle:
         return {'error': 'Discord handle is required'}, 400
@@ -513,7 +524,7 @@ def get_points():
     # get user_id from discord_handle
     user = query_db('SELECT id FROM users WHERE discord_handle = ?', (discord_handle,), one=True)
     if not user:
-        return {'error': 'No user found for the given Disocrd handle'}, 404
+        return {'error': 'No user found for the given Discord handle'}, 404
 
     user_id = user['id']
     challenge_points = get_user_challenge_points(user_id)
@@ -526,6 +537,34 @@ def get_points():
     return {'discord_handle': discord_handle,
             'total_points': total_points}, 200
 
+# List all CTFs in the database and return dictionary with relevant data for each
+@app.route('/api/listctfs', methods=['GET'])
+def api_list_ctfs():
+
+    ctfs = query_db('SELECT id, name, start_date, end_date FROM ctf ORDER BY id ASC')
+    if not ctfs:
+        return {'error': 'No CTFs found'}, 404
+
+    return {'ctfs': [dict(ctf) for ctf in ctfs]}, 200
+
+# API create a new CTF
+@app.route('/api/createctf', methods=['POST'])
+def api_create_ctf():
+
+    api_key = request.headers.get('X-API-KEY')
+    if api_key and api_key != blu_api_key:
+        return {'error': 'Unauthorized'}, 401
+
+    data = request.get_json()
+    name = data.get('name')
+    start_date = data.get('start_date')
+    end_date = data.get('end_date')
+
+    if not all([name, start_date, end_date]):
+        return {'error': 'A required field is missing'}, 400
+
+    query_db('INSERT INTO ctf (name, start_date, end_date) VALUES (?, ?, ?)', (name, start_date, end_date))
+    return {'success': True}, 201
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
