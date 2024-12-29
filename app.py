@@ -566,5 +566,37 @@ def api_create_ctf():
     query_db('INSERT INTO ctf (name, start_date, end_date) VALUES (?, ?, ?)', (name, start_date, end_date))
     return {'success': True}, 201
 
+@app.route('/api/challenges', methods=['GET'])
+def api_get_challenges():
+    ctf_id = request.args.get('ctf_id')
+    if not ctf_id:
+        return {'error': 'ctf_id is required'}, 400
+
+    challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
+    return {'challenges': [dict(row) for row in challenges]}, 200
+
+@app.route('/api/createchallenge', methods=['POST'])
+def api_create_challenge():
+    api_key = request.headers.get('X-API-KEY')
+    if api_key and api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}, 401
+
+    data = request.get_json()
+    name = data.get('name')
+    description = data.get('description')
+    points = data.get('points')
+    ctf_id = data.get('ctf_id')
+    flag = data.get('flag')
+
+    if not (name and description and points and ctf_id):
+        return {'success': False, 'error': 'A required field is missing'}, 400
+
+    query_db('''
+        INSERT INTO challenge (ctf_id, name, description, points, flag)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (ctf_id, name, description, points, flag))
+
+    return {'success': True, 'message': 'Challenge created successfully'}, 201
+
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
