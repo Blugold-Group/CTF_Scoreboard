@@ -598,5 +598,35 @@ def api_create_challenge():
 
     return {'success': True, 'message': 'Challenge created successfully'}, 201
 
+# API route that returns the global top 10 users with highest points
+@app.route('/api/leaderboard/global', methods=['GET'])
+def api_global_leaderboard():
+    leaderboard = query_db('''
+        SELECT u.username, SUM(c.points) AS total_points
+        FROM users u
+        JOIN user_challenges uc ON u.id = uc.user_id
+        JOIN challenge c ON uc.challenge_id = c.id
+        WHERE uc.completed = 1
+        GROUP BY u.id
+        ORDER BY total_points DESC
+        LIMIT 10
+    ''')
+    return {'leaderboard': [dict(row) for row in leaderboard]}, 200
+
+# API route to return top 10 users with hightest points for specific CTF
+@app.route('/api/leaderboard/<int:ctf_id>', methods=['GET'])
+def api_ctf_leaderboard(ctf_id):
+    leaderboard = query_db('''
+        SELECT u.username, SUM(c.points) AS total_points
+        FROM users u
+        JOIN user_challenges uc ON u.id = uc.user_id
+        JOIN challenge c ON uc.challenge_id = c.id
+        WHERE uc.completed = 1 AND c.ctf_id = ?
+        GROUP BY u.id
+        ORDER BY total_points DESC
+        LIMIT 10
+    ''', (ctf_id,))
+    return {'leaderboard': [dict(row) for row in leaderboard]}, 200
+
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
