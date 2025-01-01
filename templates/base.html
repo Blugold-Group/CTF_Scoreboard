@@ -20,10 +20,55 @@
                 <li><a href="/bounties">Bounties</a></li>
                 <li><a href="/resources">Resources</a></li>
                 <li><a href="/about">About</a></li>
+                <li class="dropdown">
+                    {% if not current_user.is_authenticated %}
+                        <a href="/login">Login</a>
+                    {% else %}
+                        <a href="#" class="dropdown-toggle">Profile</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/profile">View Profile</a></li>
+                            {% if current_user.is_admin %}
+                                <li><a href="/admin">Admin Dashboard</a></li>
+                            {% endif %}
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    {% endif %}
+                </li>
             </ul>
         </nav>
         {% block content %}
         {% endblock %}
     </main>
+    <style>
+        /* styles for the navbar dropdown */
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #2060df;
+            list-style: none;
+            min-width: 150px;
+            padding: 10px;
+            margin: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-menu li {
+            padding: 10px;
+        }
+        .dropdown-menu li a {
+            text-decoration: none;
+            color: white;
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+    </style>
 </body>
 </html>

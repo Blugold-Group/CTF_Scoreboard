@@ -37,7 +37,7 @@
     <thead>
         <tr>
             <th onclick="sortTable(0)">Username</th>
-            <th>Discord Handle</th>
+            <!--<th>Discord Handle</th>-->
             <th onclick="sortTable(1)">Total Challenges Completed</th>
             <th onclick="sortTable(2)">Total points</th>
         </tr>
@@ -62,7 +62,7 @@
                         {% endfor %}
 
                     {% endif %}</td>
-                <td>{{ discord_handles[i] }}</td>
+                <!--<td>{{ discord_handles[i] }}</td>-->
                 <td>{{ total_user_challenges[i] }}</td>
                 <td>{{ points[i] }}</td>
             </tr>
@@ -71,8 +71,6 @@
 </table>
 
 <p><a href="/about/badges">More information about badges</a></p>
-<a href="{{ url_for('connect_discord') }}" class="btn btn-primary">Connect Discord</a>
-
 
 <script>
     function sortTable(n) {
