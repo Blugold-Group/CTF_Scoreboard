@@ -1,19 +1,28 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import pyotp, os, secrets, markdown, sqlite3, logging
+import pyotp, os, secrets, markdown, sqlite3, logging, requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
 
 from config import *
 from helpers import *
 from routes.ctf import ctf_bp
+from routes.api import api_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_urlsafe(64)
 
+load_dotenv()
+
+# API key defined in .env. Must match key defined in the Discord bot's .env file.
+blu_api_key = os.getenv('BLU_API_KEY')
+DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
+
 # Register blueprints (see readme for more info)
 app.register_blueprint(ctf_bp)
+app.register_blueprint(api_bp)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -102,6 +111,7 @@ def login():
             #    flash("Invalid 2FA code", "error")
 
             login_user(user)
+            session["user_id"] = user.id
 
             # log a login attempt with a different message depending on is_admin
             if current_user.is_admin:
@@ -360,6 +370,7 @@ def view_members():
     points = []
     total_user_challenges = []
     tags = []
+    discord_handles = []
 
     user_challenge_points = get_all_user_challenge_points()
 
@@ -374,7 +385,14 @@ def view_members():
         else:
             tags.append("")
 
-    return render_template('members.html', usernames=usernames, points=points, total_user_challenges=total_user_challenges, tags=tags)
+        discord_handle = query_db('SELECT discord_handle FROM users WHERE id = ?', [user_id], one=True)
+
+        if discord_handle and discord_handle[0]:
+            discord_handles.append(discord_handle[0])
+        else:
+            discord_handles.append("")
+
+    return render_template('members.html', usernames=usernames, points=points, total_user_challenges=total_user_challenges, tags=tags, discord_handles=discord_handles)
 
 @app.route('/admin_reset_password', methods=['GET', 'POST'])
 @login_required
@@ -436,6 +454,12 @@ def reset_password():
 
     # Render the reset password form (GET request)
     return render_template('reset_password.html')
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    user_data = query_db('SELECT * FROM users WHERE id = ?', [current_user.id], one=True)
+    return render_template('profile.html', user=user_data)
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
