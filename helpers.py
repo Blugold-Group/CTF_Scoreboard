@@ -15,7 +15,8 @@ def init_db():
             otp_secret TEXT NOT NULL,
             lock_permissions TEXT NOT NULL,
             is_admin INTEGER DEFAULT 0,
-            tags TEXT
+            tags TEXT,
+            discord_handle TEXT UNIQUE
         )
         ''')
 
@@ -90,6 +91,16 @@ def init_db():
             completion_dates TEXT  -- Comma-separated list of timestamps
         );
         """)
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS link_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL UNIQUE,
+            expires_at DATETIME NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+        ''')
 
         conn.commit()
 
@@ -265,6 +276,19 @@ def get_username_by_user_id(user_id):
         return result['username']  # Return the username from the row
     else:
         return None  # Return None if no user found
+
+def get_user_id_by_discord_handle(discord_handle):
+    """
+    Retrieve the user ID associated with a given Discord handle
+
+    :param discord_handle: The discord handle (e.g. 'username#1234')
+    :return: The user ID if found, or None if the user doesn't exist
+    """
+    user = query_db('SELECT id FROM users WHERE discord_handle = ?', (discord_handle,), one=True)
+    if user:
+        return user['id'] # Return user_id from users table in database
+    else:
+        return None # Return None if no user is found
 
 def get_user_ids():
     # Fetches the list of user IDs from the 'users' table.
