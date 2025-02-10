@@ -1,6 +1,4 @@
 database.db
 server.log
 __pycache__/
-database.db-shm
-database.db-wal
 .env
