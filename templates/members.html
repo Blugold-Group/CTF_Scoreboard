@@ -25,7 +25,11 @@
         padding: 4px 8px;
         text-align: center;
         border-radius: 5px;
-    } 
+    }
+
+    .striped-row {
+        background-color: var(--pico-table-row-stripped-background-color);
+    }
 
 
 </style>
@@ -90,7 +94,17 @@
         });
 
         // Reattach sorted rows to the table body
-        rows.forEach(row => table.appendChild(row));
+        // rows.forEach(row => table.appendChild(row));
+
+        const tbody = table.querySelector("tbody");
+        rows.forEach((row, index) => {
+            tbody.appendChild(row);
+            if (index % 2 === 0) {
+                row.classList.add("striped-row");
+            } else {
+                row.classList.remove("striped-row");
+            }
+        });
 
         // Toggle the sorting direction
         table.rows[0].cells[n].classList.toggle("asc", !isAscending);
@@ -107,6 +121,15 @@
 
         document.getElementById('scoreTable').className = 'striped';
         */
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const rows = Array.from(document.querySelectorAll("#scoreTable tbody tr"));
+            rows.forEach((row, index) => {
+                if (index % 2 === 0) {
+                    row.classList.add("striped-row");
+                }
+            });
+        });
     }
 </script>
 {% endblock %}
