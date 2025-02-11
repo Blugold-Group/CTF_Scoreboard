@@ -350,7 +350,11 @@ def resources():
 @app.route('/about/badges')
 def badges():
 
-    with open("guides/badges.md", 'r') as file:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    file_path = os.path.join(BASE_DIR, 'guides', 'badges.md')
+
+    with open(file_path, 'r') as file:
         content = file.readlines()
             
         content = ''.join(content)
