@@ -67,6 +67,11 @@ def api_get_challenges():
     if not ctf_id:
         return {'error': 'ctf_id is required'}, 400
 
+    try:
+        ctf_id = int(ctf_id)
+    except ValueError:
+        return {'error': 'Invalid CTF ID format'}, 400
+
     challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
     return {'challenges': [dict(row) for row in challenges]}, 200
 
@@ -83,7 +88,10 @@ def api_create_challenge():
     ctf_id = data.get('ctf_id')
     flag = data.get('flag')
 
-    if not (name and description and points and ctf_id):
+    # changed this to check for None in name, description, points, ctf_id instead of the previous if not (name and description and points... etc)
+    # this caused an issue wherein, if values were set to 0, the if would be true, and thereby return the error.
+    # This *should* be fixed now. -- SGE
+    if any(x is None for x in [name, description, points, ctf_id, flag]):
         return {'success': False, 'error': 'A required field is missing'}, 400
 
     query_db('''
@@ -152,9 +160,13 @@ def verify_link_token():
     if not token_data:
         return {'error': 'Invalid token'}, 400
     
-    if datetime.now() > datetime.fromisoformat(token_data['expires_at']):
-        query_db('DELETE FROM link_tokens WHERE token = ?', (token,))
-        return {'error': 'Expired token'}, 400
+    try:
+        expiry_time = datetime.fromisoformat(token_data['expires_at'])
+        if datetime.now() > expiry_time:
+            query_db('DELETE FROM link_tokens WHERE token = ?', (token,))
+            return {'error': 'Expired token'}, 400
+    except (ValueError, TypeError):
+        return {'error': 'Invalid token'}, 400
 
     user_id = token_data['user_id']
     query_db('UPDATE users SET discord_handle = ? WHERE id = ?', (discord_handle, user_id))
@@ -203,7 +215,7 @@ def api_submit_flag():
         elif result == 'already_submitted':
             return {'success': False, 'error': 'already_submitted'}, 200
     except Exception as e:
-        print(f'Error while processing flag: {e}')
+        logging.error(f"Error submitting flag: {e}")
         return {'success': False, 'error': 'Internal server error'}, 500
 
     return {'success': False, 'error': 'Unexpected error'}, 500
