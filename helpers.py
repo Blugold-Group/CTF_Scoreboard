@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import *
 
@@ -361,3 +362,42 @@ def get_user_tags(username):
     if result:
         return result['tags']  # 'tags' is the column name, accessible via the row factory
     return None  # If no result is found, return None
+
+def edit_user(user_id, username=None, password=None, is_admin=None):
+    """ Update a user's details. Only modifies provided fields. """
+    query_parts = []
+    params = []
+
+    if username:
+        query_parts.append("username = ?")
+        params.append(username)
+    
+    if password:
+        hashed_password = generate_password_hash(password)
+        query_parts.append("password = ?")
+        params.append(hashed_password)
+
+    if is_admin is not None:
+        query_parts.append("is_admin = ?")
+        params.append(1 if is_admin else 0)
+
+    if query_parts:
+        params.append(user_id)
+        query_db(f"UPDATE users SET {', '.join(query_parts)} WHERE id = ?", params)
+
+def delete_user(user_id):
+    """ Permanently delete a user from the database """
+    query_db("DELETE FROM users WHERE id = ?", (user_id,))
+
+def delete_ctf(ctf_id):
+    """ Deletes a CTF and all associated challenges """
+    query_db("DELETE FROM challenge WHERE ctf_id = ?", (ctf_id,))
+    query_db("DELETE FROM ctf WHERE id = ?", (ctf_id,))
+
+def delete_challenge(challenge_id):
+    """ Deletes a single challenge """
+    query_db("DELETE FROM challenge WHERE id = ?", (challenge_id,))
+
+def delete_bug_bounty(bounty_id):
+    """ Deletes a bug bounty entry """
+    query_db("DELETE FROM bug_bounties WHERE id = ?", (bounty_id,))

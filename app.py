@@ -12,7 +12,7 @@ from routes.ctf import ctf_bp
 from routes.api import api_bp
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_urlsafe(64)
+app.config['SECRET_KEY'] = ",jhvzsdkfgwryigvyiyrbaerliygvsoysreiygvseyilrgvkiyrseyvigawergy3iqgliywgr4w3go75gtrfw3758o7f3qryigfo8w3rgfuyrwvtarwgvyruyrgvw3kyrgv3wgviyerwg"
 
 load_dotenv()
 
@@ -350,7 +350,11 @@ def resources():
 @app.route('/about/badges')
 def badges():
 
-    with open("guides/badges.md", 'r') as file:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    file_path = os.path.join(BASE_DIR, 'guides', 'badges.md')
+
+    with open(file_path, 'r') as file:
         content = file.readlines()
             
         content = ''.join(content)
@@ -462,4 +466,4 @@ def profile():
     return render_template('profile.html', user=user_data)
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0")

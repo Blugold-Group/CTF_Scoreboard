@@ -13,6 +13,10 @@ blu_api_key = os.getenv('BLU_API_KEY')
 
 @api_bp.route('/totalpoints', methods=['GET'])
 def api_get_points():
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
     discord_handle = request.args.get('discord_handle')
     if not discord_handle:
         return {'error': 'Discord handle is required'}, 400
@@ -35,6 +39,9 @@ def api_get_points():
 # List all CTFs in the database and return dictionary with relevant data for each
 @api_bp.route('/listctfs', methods=['GET'])
 def api_list_ctfs():
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
 
     ctfs = query_db('SELECT id, name, start_date, end_date FROM ctf ORDER BY id ASC')
     if not ctfs:
@@ -45,7 +52,6 @@ def api_list_ctfs():
 # API create a new CTF
 @api_bp.route('/createctf', methods=['POST'])
 def api_create_ctf():
-
     api_key = request.headers.get('X-API-KEY')
     if api_key and api_key != blu_api_key:
         return {'error': 'Unauthorized'}, 401
@@ -63,9 +69,18 @@ def api_create_ctf():
 
 @api_bp.route('/challenges', methods=['GET'])
 def api_get_challenges():
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
     ctf_id = request.args.get('ctf_id')
     if not ctf_id:
         return {'error': 'ctf_id is required'}, 400
+
+    try:
+        ctf_id = int(ctf_id)
+    except ValueError:
+        return {'error': 'Invalid CTF ID format'}, 400
 
     challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
     return {'challenges': [dict(row) for row in challenges]}, 200
@@ -83,7 +98,10 @@ def api_create_challenge():
     ctf_id = data.get('ctf_id')
     flag = data.get('flag')
 
-    if not (name and description and points and ctf_id):
+    # changed this to check for None in name, description, points, ctf_id instead of the previous if not (name and description and points... etc)
+    # this caused an issue wherein, if values were set to 0, the if would be true, and thereby return the error.
+    # This *should* be fixed now. -- SGE
+    if any(x is None for x in [name, description, points, ctf_id, flag]):
         return {'success': False, 'error': 'A required field is missing'}, 400
 
     query_db('''
@@ -96,6 +114,10 @@ def api_create_challenge():
 # API route that returns the global top 10 users with highest points
 @api_bp.route('/leaderboard/global', methods=['GET'])
 def api_global_leaderboard():
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
     leaderboard = query_db('''
         SELECT u.username, SUM(c.points) AS total_points
         FROM users u
@@ -111,6 +133,10 @@ def api_global_leaderboard():
 # API route to return top 10 users with hightest points for specific CTF
 @api_bp.route('/leaderboard/<int:ctf_id>', methods=['GET'])
 def api_ctf_leaderboard(ctf_id):
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
     leaderboard = query_db('''
         SELECT u.username, SUM(c.points) AS total_points
         FROM users u
@@ -125,6 +151,7 @@ def api_ctf_leaderboard(ctf_id):
 
 # generate a token to be used with a discord bot command to link accounts
 @api_bp.route('/generate-link-token', methods=['POST'])
+@login_required
 def generate_link_token():
     if 'user_id' not in session:
         return {'error': 'Unauthorized'}, 401
@@ -140,6 +167,10 @@ def generate_link_token():
 
 @api_bp.route('/verify-link-token', methods=['POST'])
 def verify_link_token():
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
     data = request.get_json()
     token = data.get('token')
     discord_handle = data.get('discord_handle')
@@ -152,9 +183,13 @@ def verify_link_token():
     if not token_data:
         return {'error': 'Invalid token'}, 400
     
-    if datetime.now() > datetime.fromisoformat(token_data['expires_at']):
-        query_db('DELETE FROM link_tokens WHERE token = ?', (token,))
-        return {'error': 'Expired token'}, 400
+    try:
+        expiry_time = datetime.fromisoformat(token_data['expires_at'])
+        if datetime.now() > expiry_time:
+            query_db('DELETE FROM link_tokens WHERE token = ?', (token,))
+            return {'error': 'Expired token'}, 400
+    except (ValueError, TypeError):
+        return {'error': 'Invalid token'}, 400
 
     user_id = token_data['user_id']
     query_db('UPDATE users SET discord_handle = ? WHERE id = ?', (discord_handle, user_id))
@@ -203,7 +238,43 @@ def api_submit_flag():
         elif result == 'already_submitted':
             return {'success': False, 'error': 'already_submitted'}, 200
     except Exception as e:
-        print(f'Error while processing flag: {e}')
+        logging.error(f"Error submitting flag: {e}")
         return {'success': False, 'error': 'Internal server error'}, 500
 
     return {'success': False, 'error': 'Unexpected error'}, 500
+
+@api_bp.route('/delete_ctf/<int:ctf_id>', methods=['DELETE'])
+def api_delete_ctf(ctf_id):
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
+    if not current_user.is_admin:
+        return {"error": "Unauthorized"}, 403
+
+    delete_ctf(ctf_id)
+    return {"success": True}, 200
+
+@api_bp.route('/delete_challenge/<int:challenge_id>', methods=['DELETE'])
+def api_delete_challenge(challenge_id):
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
+    if not current_user.is_admin:
+        return {"error": "Unauthorized"}, 403
+
+    delete_challenge(challenge_id)
+    return {"success": True}, 200
+
+@api_bp.route('/delete_bug_bounty/<int:bounty_id>', methods=['DELETE'])
+def api_delete_bug_bounty(bounty_id):
+    api_key = request.headers.get('X-API-KEY')
+    if not api_key or api_key != blu_api_key:
+        return {'success': False, 'error': 'Unauthorized'}
+    
+    if not current_user.is_admin:
+        return {"error": "Unauthorized"}, 403
+
+    delete_bug_bounty(bounty_id)
+    return {"success": True}, 200
