@@ -7,6 +7,7 @@
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
         margin-top: 20px;
+        width: 40em;
     }
     .admin-card {
         background: #0e2358;
@@ -17,17 +18,21 @@
     }
     .admin-card h2 {
         margin-bottom: 10px;
-        font-size: 1.4rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 100%;
-    }
-    .admin-card h2 {
         display: block;
         font-size: clamp(1rem, 4vw, 1.4rem);
     }
-    .admin-card a {
+    .admin-card .button-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: auto;
+        width: 20em;
+    }
+    /*.admin-card a {
         display: inline-block;
         margin-top: 10px;
         color: #fff;
@@ -38,8 +43,118 @@
     }
     .admin-card a:hover {
         background: #1a4dbd;
+    }*/
+    .admin-card a, .admin-card button {
+        text-align: center;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 8px 12px;
+        background: #2060df;
+        border-radius: 5px;
+        flex: 1 1 auto;
+        min-width: 120px;
+        border: none;
+        cursor: pointer;
+        margin-top: 1em;
+    }
+    .admin-card a:hover, .admin-card button:hover {
+        background: #1a4bdb;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: rgba(14, 35, 88, 0.75);
+        padding: 10px;
+        border-radius: 5px;
+        width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .modal-content select, .modal-content input {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .modal-content button {
+        margin-top: 10px;
+    }
+    .modal-content pre {
+        background: rgba(14, 35, 88, 0.75);
+    }
+    .log-container {
+        max-height: 50vh;
+        overflow-y: auto;
+        background: rgba(14, 35, 88, 0.75);
+        padding: 10px;
+        border-radius: 5px;
+        color: #ffffff;
+        font-family: monospace;
+        white-space: pre-wrap;
     }
 </style>
+<script>
+    function openDeleteModal(type)
+    {
+        document.getElementById(`delete${type}Modal`).style.display = 'flex';
+    }
+
+    function closeDeleteModal(type)
+    {
+        document.getElementById(`delete${type}Modal`).style.display = 'none';
+    }
+
+    async function deleteEntity(type)
+    {
+        const entityId = document.getElementById(`${type}-dropdown`).value;
+        const confirmationText = document.getElementById(`${type}-confirm-text`).value;
+
+        document.getElementById(`${type}-confirm-text`).value = "";
+
+        if (confirmationText !== "CONFIRM DELETE")
+        {
+            alert("You must type 'CONFIRM DELETE' to proceed.");
+            return;
+        }
+        const response = await fetch(`/api/delete_${type}/${entityId}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (data.success)
+        {
+            alert(`${type} deleted successfully!`);
+            location.reload();
+        } else {
+            alert('Failed to delete entity: ' + data.error);
+        }
+    }
+
+    async function fetchLogs()
+    {
+        document.getElementById('logsModal').style.display = 'flex';
+        const response = await fetch('/api/view_logs');
+        const data = await response.json();
+        document.getElementById('logs-output').textContent = data.logs ? data.logs.join("\n") : 'No logs available.';
+    }
+
+    async function fetchActivity()
+    {
+        // get the activity here
+    }
+
+    function closeModal(id)
+    {
+        document.getElementById(id).style.display = 'none';
+    }
+</script>
 {% endblock %}
 {% block content %}
 <h1>Admin Dashboard</h1>
@@ -48,20 +163,63 @@
         <h2>User Management</h2>
         <a href="{{ url_for('add_user') }}">Create User</a>
         <a href="{{ url_for('admin_reset_password') }}">Reset Password</a>
+        <button onclick="openDeleteModal('User')">Delete User</button>
     </div>
     <div class="admin-card">
         <h2>CTF Management</h2>
         <a href="{{ url_for('ctf.create_ctf') }}">Create CTF</a>
         <a href="{{ url_for('ctf.list_ctfs') }}">Manage CTFs</a>
+        <button onclick="openDeleteModal('CTF')">Delete CTF</button>
+    </div>
+    <div class="admin-card">
+        <h2>Bounties</h2>
+        <a href="{{ url_for('bounties') }}">Bounties</a>
+        <a href="{{ url_for('add_bounty') }}">Add Bounty</a>
+        <button onclick="openDeleteModal('BugBounty')">Delete Bounty</button>
     </div>
     <div class="admin-card">
         <h2>Logs & Security</h2>
-        <a href="#">View Logs</a>
-        <a href="#">Monitor Activity</a>
+        <button onclick="fetchLogs()">View Logs</button>
+        <button onclick="alert('Not yet implemented')">Monitor Activity</button>
     </div>
     <div class="admin-card">
         <h2>Leaderboard Control</h2>
         <a href="{{ url_for('scoreboard') }}">View Scoreboard</a>
     </div>
 </div>
+
+{% set entity_labels = {'User': 'username', 'CTF': 'name', 'BugBounty': 'title'} %}
+{% for entity in entity_labels.keys() %}
+<div id="delete{{ entity }}Modal" class="modal">
+    <div class="modal-content">
+        <h3>Delete a {{ entity }}</h3>
+        <select id="{{ entity | lower }}-dropdown">
+            <option value="">Select {{ entity }}</option>
+            {% for item in entities[entity] %}
+                <option value="{{ item.id }}">{{ item[entity_labels[entity]] }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" id="{{ entity | lower }}-confirm-text" placeholder="Type 'CONFIRM DELETE'">
+        <button onclick="deleteEntity('{{ entity | lower }}')">Confirm</button>
+        <button onclick="closeDeleteModal('{{ entity }}')">Cancel</button>
+    </div>
+</div>
+{% endfor %}
+
+<div id="logsModal" class="modal">
+    <div class="modal-content">
+        <h3>Server Logs</h3>
+        <pre id="logs-output">Loading...</pre>
+        <button onclick="closeModal('logsModal')">Close</button>
+    </div>
+</div>
+
+<div id="activityModal" class="modal">
+    <div class="modal-content">
+        <h3>Recent Activity</h3>
+        <ul id="activity-output" class="log-container"></ul>
+        <button onclick="closeModal('activityModal')">Close</button>
+    </div>
+</div>
+
 {% endblock %}

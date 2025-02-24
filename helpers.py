@@ -103,6 +103,16 @@ def init_db():
         )
         ''')
 
+# Create an activity_log table for future implementatio ninvolving admins viewing user activities via admin_dashboard
+#        cursor.execute('''
+#        CREATE TABLE IF NOT EXISTS activity_log (
+#            id INTEGER PRIMARY KEY AUTOINCREMENT,
+#            user_id INTEGER NOT NULL,
+#            action TEXT,
+#            timestamp TEXT
+#        );
+#        ''')
+
         conn.commit()
 
 # Helper function to interact with the database
@@ -401,3 +411,9 @@ def delete_challenge(challenge_id):
 def delete_bug_bounty(bounty_id):
     """ Deletes a bug bounty entry """
     query_db("DELETE FROM bug_bounties WHERE id = ?", (bounty_id,))
+
+# for future implementation, involving admins accessing user activities via admin_dashboard -- SGE
+def log_activity(user_id, action):
+    """ Log any action/string to an activity_log table """
+    query_db("INSERT INTO activity_log (user_id, action, timestamp) VALUES (?, ?, datetime('now')",
+        (user_id, action))

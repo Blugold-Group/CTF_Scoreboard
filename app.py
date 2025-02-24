@@ -232,8 +232,18 @@ def admin_dashboard():
 
     users = query_db('SELECT * FROM users')
     activities = query_db('SELECT * FROM activities')
+
+    ctfs = query_db('SELECT * FROM ctf')
+    bounties = query_db('SELECT * FROM bug_bounties')
+
+    entities = {
+        "User": users,
+        "CTF": ctfs,
+        "BugBounty": bounties
+    }
+
     logging.info(f"User accessed admin-only page: {current_user.username} (ID: {current_user.id})")
-    return render_template("admin.html", users=users, activities=activities)
+    return render_template("admin.html", users=users, activities=activities, entities=entities)
 
 @app.route("/edit_user/<int:user_id>", methods=["GET", "POST"])
 @login_required

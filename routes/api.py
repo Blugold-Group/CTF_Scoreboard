@@ -253,6 +253,7 @@ def api_delete_ctf(ctf_id):
         return {"error": "Unauthorized"}, 403
 
     delete_ctf(ctf_id)
+    logging.info(f'User {current_user.username} deleted a CTF with ID {ctf_id}.')
     return {"success": True}, 200
 
 @api_bp.route('/delete_challenge/<int:challenge_id>', methods=['DELETE'])
@@ -265,6 +266,7 @@ def api_delete_challenge(challenge_id):
         return {"error": "Unauthorized"}, 403
 
     delete_challenge(challenge_id)
+    logging.info(f'User {current_user.username} deleted a CTF Challenge with ID {challenge_id}.')
     return {"success": True}, 200
 
 @api_bp.route('/delete_bug_bounty/<int:bounty_id>', methods=['DELETE'])
@@ -277,4 +279,53 @@ def api_delete_bug_bounty(bounty_id):
         return {"error": "Unauthorized"}, 403
 
     delete_bug_bounty(bounty_id)
+    logging.info(f'User {current_user.username} deleted a Bug Bounty with ID {bounty_id}.')
     return {"success": True}, 200
+
+@api_bp.route('/delete_user/<int:user_id>', methods=['DELETE'])
+@login_required
+def api_delete_user(user_id):
+    if not current_user.is_admin:
+        flash("You are not authorized to delete users.", "error")
+        return redirect(url_for('dashboard'))
+
+    # Ensure the user exists before attempting to delete
+    user = query_db("SELECT * FROM users WHERE id = ?", (user_id,), one=True)
+    if not user:
+        return {"error": "User not found"}, 404
+    
+    delete_user(user_id)
+    logging.info(f'USER DELETED! User {current_user.username} deleted a User with ID {user_id}!')
+    return {"success": True}, 200
+
+@api_bp.route('/view_logs', methods=['GET'])
+@login_required
+def api_view_logs():
+    if not current_user.is_admin:
+        flash("You are not authorized to view logs.", "error")
+        return redirect(url_for('dashboard'))
+    
+    try:
+        with open(LOG_FILE, "r") as f:
+            logs = f.readlines()[-100:] # getting last 100 lines of logfile
+        return {'logs': logs}, 200
+    except FileNotFoundError:
+        return {'error', 'Log file not found'}, 404
+
+# for future implementation, show live user activity (e.g. challenge submissions, pages accessed, etc etc)
+# will use a log_activity(user_id, action) function defined in helpers.py. This will be called in places where we log activity
+#@api_bp.route('/monitor_activity', methods=['GET'])
+#@login_required
+#def api_monitor_activity():
+#    if not current_user.is_admin:
+#        flash("You are not authorized to view recent activity.", "error")
+#        return redirect(url_for('dashboard'))
+#    
+#    recent_actions = query_db("""
+#        SELECT username, action, timestamp
+#        FROM activity_log
+#        ORDER BY timestamp DESC
+#        LIMIT 50
+#    """)
+#
+#    return {"activities": [dict(row) for row in recent_actions]}, 200
