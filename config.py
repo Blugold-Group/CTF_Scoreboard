@@ -3,6 +3,9 @@ DATABASE = 'database.db'
 
 LOG_FILE = 'server.log'
 
+# Directory for where blog articles are stored
+ARTICLES_DIR = 'articles'
+
 # How many days left until the "Closing Soon!" badge displays on a CTF?
 CTF_CLOSING_SOON_DAYS = 3
 

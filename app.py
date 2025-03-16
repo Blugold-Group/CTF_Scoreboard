@@ -10,6 +10,7 @@ from config import *
 from helpers import *
 from routes.ctf import ctf_bp
 from routes.api import api_bp
+from routes.blog import blog_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = ",jhvzsdkfgwryigvyiyrbaerliygvsoysreiygvseyilrgvkiyrseyvigawergy3iqgliywgr4w3go75gtrfw3758o7f3qryigfo8w3rgfuyrwvtarwgvyruyrgvw3kyrgv3wgviyerwg"
@@ -23,6 +24,7 @@ DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
 # Register blueprints (see readme for more info)
 app.register_blueprint(ctf_bp)
 app.register_blueprint(api_bp)
+app.register_blueprint(blog_bp)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
