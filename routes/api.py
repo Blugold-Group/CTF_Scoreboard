@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, flash, redirect, url_for
+from flask import Blueprint, request, session, flash, redirect, url_for, send_file
 from flask_login import current_user, login_required
 import os, secrets, logging, requests
 from datetime import datetime, timedelta
@@ -15,15 +15,18 @@ blu_api_key = os.getenv('BLU_API_KEY')
 def api_get_points():
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /totalpoints with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     discord_handle = request.args.get('discord_handle')
     if not discord_handle:
+        logging.info(f'An API call was made to /totalpoints without discord_handle defined.')
         return {'error': 'Discord handle is required'}, 400
     
     # get user_id from discord_handle
     user_id = get_user_id_by_discord_handle(discord_handle)
     if not user_id:
+        logging.info(f'An API call was made to /totalpoints without user_id defined.')
         return {'error': 'No user found for the given Discord handle'}, 404
 
     challenge_points = get_user_challenge_points(user_id)
@@ -33,6 +36,7 @@ def api_get_points():
     else:
         total_points = 0
 
+    logging.info(f'/totalpoints was called, returning discord_handle: {discord_handle}, total_points: {total_points}.')
     return {'discord_handle': discord_handle,
             'total_points': total_points}, 200
 
@@ -41,6 +45,7 @@ def api_get_points():
 def api_list_ctfs():
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /listctfs with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
 
     ctfs = query_db('SELECT id, name, start_date, end_date FROM ctf ORDER BY id ASC')
@@ -54,6 +59,7 @@ def api_list_ctfs():
 def api_create_ctf():
     api_key = request.headers.get('X-API-KEY')
     if api_key and api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /createctf with an invalid api_key!')
         return {'error': 'Unauthorized'}, 401
 
     data = request.get_json()
@@ -71,6 +77,7 @@ def api_create_ctf():
 def api_get_challenges():
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /challenges with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     ctf_id = request.args.get('ctf_id')
@@ -89,6 +96,7 @@ def api_get_challenges():
 def api_create_challenge():
     api_key = request.headers.get('X-API-KEY')
     if api_key and api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /createchallenge with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}, 401
 
     data = request.get_json()
@@ -116,6 +124,7 @@ def api_create_challenge():
 def api_global_leaderboard():
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /leaderboard/global with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     leaderboard = query_db('''
@@ -135,6 +144,7 @@ def api_global_leaderboard():
 def api_ctf_leaderboard(ctf_id):
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /leaderboard/{ctf_id} with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     leaderboard = query_db('''
@@ -169,6 +179,7 @@ def generate_link_token():
 def verify_link_token():
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /verify-link-token with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     data = request.get_json()
@@ -181,14 +192,17 @@ def verify_link_token():
     token_data = query_db('SELECT * FROM link_tokens WHERE token = ?', (token,), one=True)
 
     if not token_data:
+        logging.critical(f'WARNING: An API call was made to /verify-link-token with an invalid token!')
         return {'error': 'Invalid token'}, 400
     
     try:
         expiry_time = datetime.fromisoformat(token_data['expires_at'])
         if datetime.now() > expiry_time:
             query_db('DELETE FROM link_tokens WHERE token = ?', (token,))
+            logging.critical(f'WARNING: An API call was made to /verify-link-token with an expired token!')
             return {'error': 'Expired token'}, 400
     except (ValueError, TypeError):
+        logging.critical(f'WARNING: An API call was made to /verify-link-token with an invalid token!')
         return {'error': 'Invalid token'}, 400
 
     user_id = token_data['user_id']
@@ -213,6 +227,7 @@ def unlink_discord():
 def api_submit_flag():
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /submitflag with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
 
     data = request.json
@@ -247,61 +262,72 @@ def api_submit_flag():
 def api_delete_ctf(ctf_id):
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /delete_ctf/{ctf_id} with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     if not current_user.is_admin:
+        logging.critical(f'WARNING: An API call was made to /delete_ctf/{ctf_id} by a non-admin user!')
         return {"error": "Unauthorized"}, 403
 
     delete_ctf(ctf_id)
-    logging.info(f'User {current_user.username} deleted a CTF with ID {ctf_id}.')
+    logging.warning(f'User {current_user.username} deleted a CTF with ID {ctf_id}.')
     return {"success": True}, 200
 
 @api_bp.route('/delete_challenge/<int:challenge_id>', methods=['DELETE'])
 def api_delete_challenge(challenge_id):
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /delete_challenge/{challenge_id} with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     if not current_user.is_admin:
+        logging.critical(f'WARNING: An API call was made to /delete_challenge/{challenge_id} by a non-admin user!')
         return {"error": "Unauthorized"}, 403
 
     delete_challenge(challenge_id)
-    logging.info(f'User {current_user.username} deleted a CTF Challenge with ID {challenge_id}.')
+    logging.warning(f'User {current_user.username} deleted a CTF Challenge with ID {challenge_id}.')
     return {"success": True}, 200
 
 @api_bp.route('/delete_bug_bounty/<int:bounty_id>', methods=['DELETE'])
 def api_delete_bug_bounty(bounty_id):
     api_key = request.headers.get('X-API-KEY')
     if not api_key or api_key != blu_api_key:
+        logging.critical(f'WARNING: An API call was made to /delete_bug_bounty/{bounty_id} with an invalid api_key!')
         return {'success': False, 'error': 'Unauthorized'}
     
     if not current_user.is_admin:
+        logging.critical(f'WARNING: An API call was made to /delete_bug_bounty/{bounty_id} by a non-admin user!')
         return {"error": "Unauthorized"}, 403
 
     delete_bug_bounty(bounty_id)
-    logging.info(f'User {current_user.username} deleted a Bug Bounty with ID {bounty_id}.')
+    logging.warning(f'User {current_user.username} deleted a Bug Bounty with ID {bounty_id}.')
     return {"success": True}, 200
 
 @api_bp.route('/delete_user/<int:user_id>', methods=['DELETE'])
 @login_required
 def api_delete_user(user_id):
+    # NOT currently allowing deletion of users from external sources (e.g. discord bot)
+    # treating user deletion as much more significant than ctf/challenge/bounty deletion
     if not current_user.is_admin:
+        logging.critical(f'WARNING: An API call was made to /api_delete_user by a non-admin user!')
         flash("You are not authorized to delete users.", "error")
         return redirect(url_for('dashboard'))
 
     # Ensure the user exists before attempting to delete
     user = query_db("SELECT * FROM users WHERE id = ?", (user_id,), one=True)
     if not user:
+        logging.critical(f'WARNING: {current_user.username} attempted to delete User with ID {user_id}, which does not exist!')
         return {"error": "User not found"}, 404
     
     delete_user(user_id)
-    logging.info(f'USER DELETED! User {current_user.username} deleted a User with ID {user_id}!')
+    logging.critical(f'USER DELETED! User {current_user.username} deleted a User with ID {user_id}!')
     return {"success": True}, 200
 
 @api_bp.route('/view_logs', methods=['GET'])
 @login_required
 def api_view_logs():
     if not current_user.is_admin:
+        logging.critical(f'WARNING: An API call was made to /view_logs by a non-admin user!')
         flash("You are not authorized to view logs.", "error")
         return redirect(url_for('dashboard'))
     
@@ -312,20 +338,16 @@ def api_view_logs():
     except FileNotFoundError:
         return {'error', 'Log file not found'}, 404
 
-# for future implementation, show live user activity (e.g. challenge submissions, pages accessed, etc etc)
-# will use a log_activity(user_id, action) function defined in helpers.py. This will be called in places where we log activity
-#@api_bp.route('/monitor_activity', methods=['GET'])
-#@login_required
-#def api_monitor_activity():
-#    if not current_user.is_admin:
-#        flash("You are not authorized to view recent activity.", "error")
-#        return redirect(url_for('dashboard'))
-#    
-#    recent_actions = query_db("""
-#        SELECT username, action, timestamp
-#        FROM activity_log
-#        ORDER BY timestamp DESC
-#        LIMIT 50
-#    """)
-#
-#    return {"activities": [dict(row) for row in recent_actions]}, 200
+@api_bp.route('/download_logs', methods=['GET'])
+@login_required
+def api_download_logs():
+    if not current_user.is_admin:
+        logging.critical(f'WARNING: An API call was made to /download_logs by a non-admin user!')
+        flash("You are not authorized to download log files.", "error")
+        return redirect(url_for('dashboard'))
+    
+    try:
+        logging.warning(f'A log file was downloaded via /download_logs!')
+        return send_file(LOG_FILE, as_attachment=True, download_name="server.log")
+    except FileNotFoundError:
+        return {'error': 'Log file not found'}, 404

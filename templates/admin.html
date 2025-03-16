@@ -145,9 +145,9 @@
         document.getElementById('logs-output').textContent = data.logs ? data.logs.join("\n") : 'No logs available.';
     }
 
-    async function fetchActivity()
+    function downloadLogs()
     {
-        // get the activity here
+        window.location.href = '/api/download_logs';
     }
 
     function closeModal(id)
@@ -180,7 +180,7 @@
     <div class="admin-card">
         <h2>Logs & Security</h2>
         <button onclick="fetchLogs()">View Logs</button>
-        <button onclick="alert('Not yet implemented')">Monitor Activity</button>
+        <button onclick="downloadLogs()">Download Logs</button>
     </div>
     <div class="admin-card">
         <h2>Leaderboard Control</h2>
