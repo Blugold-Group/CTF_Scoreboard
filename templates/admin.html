@@ -104,6 +104,9 @@
     }
 </style>
 <script>
+
+    // delete modal and deleting things
+
     function openDeleteModal(type)
     {
         document.getElementById(`delete${type}Modal`).style.display = 'flex';
@@ -137,6 +140,8 @@
         }
     }
 
+    // logs things
+
     async function fetchLogs()
     {
         document.getElementById('logsModal').style.display = 'flex';
@@ -150,9 +155,104 @@
         window.location.href = '/api/download_logs';
     }
 
+    // closeModal closes a modal
+
     function closeModal(id)
     {
         document.getElementById(id).style.display = 'none';
+    }
+
+    // challenge reorder things
+
+    function openReorderModal()
+    {
+        document.getElementById('reorderChallengesModal').style.display = 'flex';
+    }
+
+    function fetchChallenges()
+    {
+        let ctfId = document.getElementById('ctf-select').value;
+        let challengeList = document.getElementById('challenge-list');
+        challengeList.innerHTML = '';
+        document.getElementById('save-order-button').disabled = true;
+
+        if (!ctfId) return;
+
+        fetch(`/api/challenges?ctf_id=${ctfId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.challenges)
+                {
+                    data.challenges.sort((a, b) => a.order_index - b.order_index);
+                    data.challenges.forEach(challenge => {
+                        let li = document.createElement('li');
+                        li.textContent = challenge.name;
+                        li.setAttribute('data-id', challenge.id);
+                        li.style.padding = '10px';
+                        li.style.cursor = 'move';
+                        //li.style.background = '#eee';
+                        li.style.margin = '5px 0';
+                        li.draggable = true;
+
+                        li.addEventListener('dragstart', dragStart);
+                        li.addEventListener('dragover', dragOver);
+                        li.addEventListener('drop', drop);
+
+                        challengeList.appendChild(li);
+                    });
+                    document.getElementById('save-order-button').disabled = false;
+                }
+            });
+    }
+
+    let draggedItem = null;
+    function dragStart(event)
+    {
+        draggedItem = event.target;
+        event.dataTransfer.setData('text/plain', event.target.dataset.id);
+    }
+
+    function dragOver(event)
+    {
+        event.preventDefault();
+        let list = event.target.parentNode;
+        let items = [...list.children];
+        let index = items.indexOf(event.target);
+        let draggedIndex = items.indexOf(draggedItem);
+        if (draggedIndex < index)
+        {
+            list.insertBefore(draggedItem, event.target.nextSibling);
+        } else {
+            list.insertBefore(draggedItem, event.target);
+        }
+    }
+
+    function drop(event)
+    {
+        event.preventDefault();
+    }
+
+    function saveChallengeOrder()
+    {
+        let challengeList = document.querySelectorAll('#challenge-list li');
+        let challengeOrders = [];
+
+        challengeList.forEach((item, index) => {
+            challengeOrders.push({ id: item.dataset.id, order_index: index });
+        });
+
+        fetch('/api/update_challenge_order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ challenge_orders: challengeOrders })
+        }).then(response => response.json()).then(data => {
+            if (data.success)
+            {
+                alert('Challenge order updated');
+            } else {
+                alert('Error updating order');
+            }
+        })
     }
 </script>
 {% endblock %}
@@ -170,6 +270,7 @@
         <a href="{{ url_for('ctf.create_ctf') }}">Create CTF</a>
         <a href="{{ url_for('ctf.list_ctfs') }}">Manage CTFs</a>
         <button onclick="openDeleteModal('CTF')">Delete CTF</button>
+        <button onclick="openReorderModal()">Reorder Challenges</button>
     </div>
     <div class="admin-card">
         <h2>Bounties</h2>
@@ -219,6 +320,23 @@
         <h3>Recent Activity</h3>
         <ul id="activity-output" class="log-container"></ul>
         <button onclick="closeModal('activityModal')">Close</button>
+    </div>
+</div>
+
+<div id="reorderChallengesModal" class="modal">
+    <div class="modal-content">
+        <h3>Reorder Challenges</h3>
+        <label for="ctf-select">Select CTF:</label>
+        <select id="ctf-select" onchange="fetchChallenges()">
+            <option value="">Select a CTF</option>
+            {% for ctf in entities["CTF"] %}
+            <option value="{{ ctf.id }}">{{ ctf.name }}</option>
+            {% endfor %}
+        </select>
+
+        <ul id="challenge-list" style="list-style-type: none; padding: 0;"></ul>
+        <button id="save-order-button" onclick="saveChallengeOrder()" disabled>Save Order</button>
+        <button onclick="closeModal('reorderChallengesModal')">Close</button>
     </div>
 </div>
 

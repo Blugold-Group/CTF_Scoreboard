@@ -114,7 +114,7 @@ def view_ctf(ctf_id):
             flash('Something went wrong!', 'error')
 
 
-    challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ?', (ctf_id,))
+    challenges = query_db('SELECT * FROM challenge WHERE ctf_id = ? ORDER BY order_index ASC', (ctf_id,))
 
     # Getting a list of completed challenges using is_challenge_completed from helper.py
     # There was a var previously existing called completed_challenges, renamed to completed_challenges_count

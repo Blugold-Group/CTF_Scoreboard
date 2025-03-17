@@ -65,6 +65,7 @@ def init_db():
             description TEXT,
             points INTEGER NOT NULL,
             flag TEXT NOT NULL,  -- Adding the flag column
+            order_index INTEGER NOT NULL,
             FOREIGN KEY (ctf_id) REFERENCES ctf(id)
         )
         ''')

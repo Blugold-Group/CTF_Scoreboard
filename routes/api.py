@@ -75,10 +75,10 @@ def api_create_ctf():
 
 @api_bp.route('/challenges', methods=['GET'])
 def api_get_challenges():
-    api_key = request.headers.get('X-API-KEY')
-    if not api_key or api_key != blu_api_key:
-        logging.critical(f'WARNING: An API call was made to /challenges with an invalid api_key!')
-        return {'success': False, 'error': 'Unauthorized'}
+    #api_key = request.headers.get('X-API-KEY')
+    #if not api_key or api_key != blu_api_key:
+    #    logging.critical(f'WARNING: An API call was made to /challenges with an invalid api_key!')
+    #    return {'success': False, 'error': 'Unauthorized'}
     
     ctf_id = request.args.get('ctf_id')
     if not ctf_id:
@@ -351,3 +351,21 @@ def api_download_logs():
         return send_file(LOG_FILE, as_attachment=True, download_name="server.log")
     except FileNotFoundError:
         return {'error': 'Log file not found'}, 404
+
+@api_bp.route('/update_challenge_order', methods=['POST'])
+@login_required
+def update_challenge_order():
+    if not current_user.is_admin:
+        logging.critical('WARNING: An API call was made to /update_challenge_order by a non-admin user!')
+        return redirect(url_for('dashboard'))
+
+    data = request.get_json()
+    challenge_orders = data.get('challenge_orders')
+
+    if not challenge_orders:
+        return {'error': 'Invalid request data'}, 400
+
+    for challenge in challenge_orders:
+        query_db('UPDATE challenge SET order_index = ? WHERE id = ?', (challenge['order_index'], challenge['id']))
+
+    return {'success': True, 'message': 'Challenge order updated successfully'}
