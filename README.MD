@@ -143,6 +143,12 @@ The `/static/` directory provides static media which is available without authen
 
 #### /templates/
 
+#### /articles/
+
+The `/articles/` directory contains blog articles, written in Markdown, each stored as a separate `.md` file.
+Any `.md` files present in the folder are automatically listed when a user goes to the `/articles` route,
+and are converted to HTML and rendered in `view_article.html` by the backend.
+
 ##### Jinja `extends`
 
 Keeping a seperate copy of html which is thr same across multiple files is annoying, when you make a change to the header you have to copy and paste your changes across dozens of `.html` files. To fix that, Jinja provides the `extends` function
@@ -165,6 +171,8 @@ If you add on to this codebase, please add your name below
 
 This server was created by Jack Hagen (the founder of the club) over a weekend in October 2024, and maintained by him from October 2024-
 
+Various features, updates, fixes, etc by Silas Eacret (*🍗🍗🍗 Chief Development Officer 🍗🍗🍗*), starting in December 2024, in addition to maintenance.
+
 ### Historical Notes
 
 The CLEAS (Cyber Lab Equipment Access System) was originally meant to authenticate id tags unique to each club member, allowing us to see who unlocked what when. The lock permissions were meant to be tied to user accounts on this server, so any mention of locks in the code references that. Ultimately we just used a basic nfc lock which uses one nfc password which was copied to several tags to be shared by all members
@@ -179,7 +187,7 @@ For some reason when running from cron after reboots, setting up a Cloudflare tu
 
 ### Boot up script
 
-## Setup
+### Setup
 
 To start the server (**in debug mode**), first ensure Python and Pip are installed.
 Run `pip install -r requirements.txt` to install packages required for the server to run. Finally, run `python app.py`. The site should be accessible at any of the given addresses.

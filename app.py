@@ -10,9 +10,10 @@ from config import *
 from helpers import *
 from routes.ctf import ctf_bp
 from routes.api import api_bp
+from routes.blog import blog_bp
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_urlsafe(64)
+app.config['SECRET_KEY'] = ",jhvzsdkfgwryigvyiyrbaerliygvsoysreiygvseyilrgvkiyrseyvigawergy3iqgliywgr4w3go75gtrfw3758o7f3qryigfo8w3rgfuyrwvtarwgvyruyrgvw3kyrgv3wgviyerwg"
 
 load_dotenv()
 
@@ -23,6 +24,7 @@ DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
 # Register blueprints (see readme for more info)
 app.register_blueprint(ctf_bp)
 app.register_blueprint(api_bp)
+app.register_blueprint(blog_bp)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -232,8 +234,18 @@ def admin_dashboard():
 
     users = query_db('SELECT * FROM users')
     activities = query_db('SELECT * FROM activities')
+
+    ctfs = query_db('SELECT * FROM ctf')
+    bounties = query_db('SELECT * FROM bug_bounties')
+
+    entities = {
+        "User": users,
+        "CTF": ctfs,
+        "BugBounty": bounties
+    }
+
     logging.info(f"User accessed admin-only page: {current_user.username} (ID: {current_user.id})")
-    return render_template("admin.html", users=users, activities=activities)
+    return render_template("admin.html", users=users, activities=activities, entities=entities)
 
 @app.route("/edit_user/<int:user_id>", methods=["GET", "POST"])
 @login_required
@@ -350,7 +362,11 @@ def resources():
 @app.route('/about/badges')
 def badges():
 
-    with open("guides/badges.md", 'r') as file:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    file_path = os.path.join(BASE_DIR, 'guides', 'badges.md')
+
+    with open(file_path, 'r') as file:
         content = file.readlines()
             
         content = ''.join(content)
@@ -462,4 +478,4 @@ def profile():
     return render_template('profile.html', user=user_data)
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0")
