@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint
+from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pyotp, os, secrets, markdown, sqlite3, logging, requests
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -80,6 +80,11 @@ init_db()
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('static/images', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+# Robots file, SEO baby
+@app.route('/robots.txt')
+def robots_txt():
+    return send_file('static/robots.txt', mimetype='text/plain')
 
 # Routes
 @app.route("/login", methods=["GET", "POST"])
