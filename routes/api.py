@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, flash, redirect, url_for, send_file
 from flask_login import current_user, login_required
-import os, secrets, logging, requests
+import os, secrets, logging, requests, html
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from config import *
@@ -37,7 +37,7 @@ def api_get_points():
         total_points = 0
 
     logging.info(f'/totalpoints was called, returning discord_handle: {discord_handle}, total_points: {total_points}.')
-    return {'discord_handle': discord_handle,
+    return {'discord_handle': html.escape(discord_handle),
             'total_points': total_points}, 200
 
 # List all CTFs in the database and return dictionary with relevant data for each
