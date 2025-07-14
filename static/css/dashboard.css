@@ -1,0 +1,128 @@
+/* CSS for the dashboard (dashboard.html)*/
+
+:root {
+    /*--bg-dark: #000012;*/
+    --bg-dark: #01010a;
+    --bg-darker: #010111;
+    --accent: #39f;
+    --text-light: #e0e0ff;
+    --text-muted: #888;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    overflow-x: hidden;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: var(--bg-dark);
+    padding: 0.5em 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+nav a {
+    color: var(--text-light);
+    margin: 0 0.75em;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+nav a:hover {
+    color: var(--accent);
+}
+
+h1 {
+    font-size:3em;
+    letter-spacing:2px;
+}
+
+#intro {
+    height:100vh;
+    width:100vw;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+}
+
+#faqs details {
+    margin-bottom: 1em;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#faqs details summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 5px 0;
+}
+
+#faqs details p {
+    margin:8px 0 0;
+    line-height:1.5;
+    color:#c0c0ff;
+}
+
+.padding-60-20 {
+    padding: 60px 20px;
+}
+
+/* 
+thanks, Monty
+*/
+.how-we-do-it {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+    gap:30px;
+    margin-top:40px;
+    max-width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.how-we-do-it div {
+    padding: 20px;
+    border-left: 5px solid;
+}
+
+.width-1000-margin-auto {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+#terminal > div {
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+    margin-top:30px;
+}
+
+#terminal > div div {
+    background-color:#000;
+    padding:20px;
+    font-family:'Courier New', monospace;
+    width:50%;
+    border:1px solid #222;
+    border-radius:8px;
+    box-shadow:0 0 10px rgb(0, 38, 255);
+}
+
+.line-height-05 {
+    line-height: 0.5;
+}
+
+.line-height-18 {
+    line-height: 1.8;
+}
