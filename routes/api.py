@@ -1,3 +1,6 @@
+"""
+# This was all written by Silas for the Bluscreen Discord bot when we were hostig CT stuff on the website, if he wants to keep the bot it will need to migrate to use the new ctfd server 
+
 from flask import Blueprint, request, session, flash, redirect, url_for, send_file
 from flask_login import current_user, login_required
 import os, secrets, logging, requests, html
@@ -369,3 +372,5 @@ def update_challenge_order():
         query_db('UPDATE challenge SET order_index = ? WHERE id = ?', (challenge['order_index'], challenge['id']))
 
     return {'success': True, 'message': 'Challenge order updated successfully'}
+
+"""

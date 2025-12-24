@@ -1,33 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Blugold Group{% endblock %}
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-    content="The Blugold Group - Cybersecurity Club at UW-Eau Claire. Join us for hands-on hacking, competitions, research, and red teaming." />
-  <meta name="keywords" content="cybersecurity, club, UWEC, Eau Claire, hacking, CTF, red teaming, Blugold Group" />
-  <meta name="author" content="The Blugold Group" />
-  <link rel="stylesheet" href="/static/css/pico.blue.min.css">
+{% block style %}
   <link rel="stylesheet" href="/static/css/dashboard.css">
-  <title>The Blugold Group Homepage</title>
-</head>
+{% endblock %}
 
-<body>
-  <!-- Navbar-->
-  <nav>
-    <a href="#intro">Home</a>
-    <div>
-      <a href="https://discord.gg/MHhBFZth7b" target="_blank" rel="noopener noreferrer">Discord</a>
-      <a href="https://github.com/Blugold-Group" target="_blank" rel="noopener noreferrer">Github</a>
-      <li><a href="https://outlook.office365.com/owa/calendar/a095948822b745e2a38b88d2198c9f63@uwec.edu/c37a0791f8c34c17a13f33cea666f5df14002655777961391635/calendar.html">Calendar</a></li>
-      <a href="/ctf">CTFs</a>
-      <a href="/bounties">Bounties</a>
-      <a href="/about">About</a>
-      <a href="/articles">Blog</a>
-    </div>
-  </nav>
-  <main>
+{% block content %}
     <!-- Intro Screen -->
     <section id="intro">
       <img src="/static/images/logo.png" alt="Blugold Group Logo" style="width:20%; height:auto; margin-bottom:20px;" />
@@ -134,11 +112,5 @@
         </details>
       </div>
     </section>
-  </main>
-  <!-- Footer -->
-  <footer style="padding:20px; text-align:center; font-size:0.9em; color:#888;">
-    The Blugold Group | <a href="https://uwec.edu">University of Wisconsin - Eau Claire</a>
-  </footer>
-</body>
 
-</html>
+{% endblock %}
