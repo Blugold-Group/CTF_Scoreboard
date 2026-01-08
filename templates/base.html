@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/pico.blue.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.25.4/dist/css/uikit.min.css" />
     <link rel="stylesheet" href="/static/css/cards.css">
     <title>{% block title %}Blugold Group{% endblock %}</title>
     {% block style %}{% endblock %}
@@ -17,60 +17,20 @@
             <ul>
                 <li><a href="https://discord.gg/MHhBFZth7b">Discord</a></li>
                 <li><a href="https://github.com/Blugold-Group">Github</a></li>
+                <li><a href="https://outlook.office365.com/owa/calendar/a095948822b745e2a38b88d2198c9f63@uwec.edu/c37a0791f8c34c17a13f33cea666f5df14002655777961391635/calendar.html">Calendar</a></li>
                 <li><a href="/ctf">CTFs</a></li>
                 <li><a href="/bounties">Bounties</a></li>
-                <li><a href="/resources">Resources</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/articles">Blog</a></li>
-                <li class="dropdown">
-                    {% if not current_user.is_authenticated %}
-                        <a href="/login">Login</a>
-                    {% else %}
-                        <a href="#" class="dropdown-toggle">Profile</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/profile">View Profile</a></li>
-                            {% if current_user.is_admin %}
-                                <li><a href="/admin">Admin Dashboard</a></li>
-                            {% endif %}
-                            <li><a href="/logout">Logout</a></li>
-                        </ul>
-                    {% endif %}
-                </li>
             </ul>
         </nav>
         {% block content %}
         {% endblock %}
+
+    <footer style="padding:20px; text-align:center; font-size:0.9em; color:#888;">
+        The Blugold Group | <a href="https://uwec.edu">University of Wisconsin - Eau Claire</a>
+    </footer>
+
     </main>
-    <style>
-        /* styles for the navbar dropdown */
-        .dropdown {
-            position: relative;
-        }
-        .dropdown-toggle {
-            cursor: pointer;
-        }
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: #2060df;
-            list-style: none;
-            min-width: 150px;
-            padding: 10px;
-            margin: 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .dropdown-menu li {
-            padding: 10px;
-        }
-        .dropdown-menu li a {
-            text-decoration: none;
-            color: white;
-        }
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-    </style>
 </body>
 </html>

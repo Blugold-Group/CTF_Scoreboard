@@ -1,5 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, send_from_directory, Blueprint
-from helpers import *
+from flask import Flask, render_template, redirect, url_for, flash, Blueprint
 from config import *
 
 import os
@@ -18,12 +17,12 @@ def list_articles():
             slug = filename[:-3] # the URL slug should just be the filename (removing .md extension)
             articles.append({'title': slug.replace('-', ' ').title(), 'slug': slug}) # adding the slug to articles list with jproper format
 
-    return render_template('articles.html', articles=sorted(articles, key=lambda x: x['title'])) # lambda functions rule!!!
+    return render_template('articles.html', articles=sorted(articles, key=lambda x: x['title']))
     
 # Rendering an individal article
 @blog_bp.route('/articles/<slug>')
 def view_article(slug):
-    article_path = os.path.join(ARTICLES_DIR, f'{slug}.md')
+    article_path = os.path.normpath(os.path.join(ARTICLES_DIR, f'{slug}.md'))
 
     if not os.path.exists(article_path):
         flash('File not found', 'error')

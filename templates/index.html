@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Blugold Group{% endblock %}
+
+{% block style %}
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+{% endblock %}
+
+{% block content %}
+    <!-- Intro Screen -->
+    <section id="intro">
+      <img src="/static/images/logo.png" alt="Blugold Group Logo" style="width:20%; height:auto; margin-bottom:20px;" />
+      <h1>The Blugold Group</h1>
+      <p style="color:#888; margin-top:10px;">Cybersecurity Club @ <a style="color: grey" href="https://uwec.edu">UW-Eau
+          Claire</a></p>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="padding-60-20 width-1000-margin-auto">
+      <h2 style="font-size:2em; margin-bottom:20px;">Who We Are</h2>
+      <p class="line-height-18">The Blugold Group is the Cybersecurity Club for the University of Wisconsin - Eau
+        Claire. We focus on providing hands-on, practical experiences which translate directly into the workforce.</p>
+      <p class="line-height-18">We provide a welcoming environment where anyone of any skill level can learn
+        cybersecurity skills.</p>
+      <p class="line-height-18">We conduct research, compete at competitions, perform red teaming exercises, and
+        foster learning through collaboration and hands-on workshops.</p>
+    </section>
+
+    <!-- Terminal Simulation -->
+    <section id="terminal" class="padding-60-20">
+      <div>
+        <div>
+          <p><span style="color:#888;">user@blugold:</span><span style="color:#fff;">~$</span> cat workshop-topics.txt
+          </p>
+          <p class="line-height-05">- Cyber Basics</p>
+          <p class="line-height-05">- Cryptography</p>
+          <p class="line-height-05">- Network Security</p>
+          <p class="line-height-05">- Open Source Intelligence</p>
+          <p class="line-height-05">- Malware Building and Defense</p>
+          <p class="line-height-05">- Social Engineering</p>
+          <p class="line-height-05">- Web App Security</p>
+          <p class="line-height-05">- Threat Intelligence</p>
+          <p class="line-height-05">- Binary Exploitation</p>
+          <p class="line-height-05">- Incident Response</p>
+          <p class="line-height-05">- Digital Forensics</p>
+          <p class="line-height-05">- AI Security</p>
+          <p class="line-height-05">- Hardware Security</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mission" class="padding-60-20 width-1000-margin-auto">
+      <h2 style="font-size:2em; margin-bottom:20px;">What We Do</h2>
+      <p class="line-height-18">We provide a space for any UW-Eau Claire student to learn about cybersecurity
+        hands-on.<br>
+        To give them a chance to prove themselves.</p>
+      <p class="line-height-18">We're shaping the next generation of security professionals and hackers.</p>
+    </section>
+
+    <!-- How We Do It Section -->
+    <section id="how" class="padding-60-20">
+      <h2 style="text-align:center;">How We Do It</h2>
+      <div class="how-we-do-it">
+        <div>
+          <h3>🛠 Workshops</h3>
+          <p>Hacking. Hardening. Hands-on labs every week</p>
+        </div>
+        <div>
+          <h3>🚩 Capture the Flag</h3>
+          <p>Practice solving realistic security challenges in timed competitions</p>
+        </div>
+        <div>
+          <h3>🎤 Guest Speakers</h3>
+          <p>Learn from renowned cybersecurity experts</p>
+        </div>
+        <div>
+          <h3>🏆 Competitions</h3>
+          <p>We compete in regional, state, and national competitions</p>
+        </div>
+        <div>
+          <h3>🔎 Research</h3>
+          <p>UW-Eau Claire is known for its undergraduate research; the Blugold Group is no exception. We are one of the
+            university's sources for high-quality, impactful research</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Join Us section -->
+    <section id="join" style="text-align: center;">
+      <h2>Join Us</h2>
+      <p>Meetings every Tuesday at 6:00 PM<br>Vicki Lord Larson 1132 (between Schofield and the Library)</p>
+      <p>Join our Discord server and Blugold Connect+ group for updates and meeting information.</p>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faqs" class="padding-60-20" style="display:flex; justify-content:center;">
+      <div style="width:50%; text-align:left;">
+        <h2 style="text-align:center; margin-bottom:1em; color:#e0e0ff;">FAQs</h2>
+        <details style="margin-bottom:1em; padding:10px; border-radius:4px;">
+          <summary>Do I need prior experience to join?</summary>
+          <p>No! We welcome all skill levels. Workshops start
+            with basics and build up.</p>
+        </details>
+        <details style="margin-bottom:1em; padding:10px; border-radius:4px;">
+          <summary>Is membership free?</summary>
+          <p>Yes! It's completely free and available for UW-Eau Claire students.</p>
+        </details>
+        <details style="margin-bottom:0; padding:10px; border-radius:4px;">
+          <summary>Who can I contact for questions?</summary>
+          <p>Email us at <a href="mailto:cyberclub@uwec.edu"
+              style="color:#39f; text-decoration:none;">cyberclub@uwec.edu</a>.</p>
+        </details>
+      </div>
+    </section>
+
+{% endblock %}

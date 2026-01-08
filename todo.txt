@@ -1,0 +1,7 @@
+- Remove ctf and bounty stuff
+- Make discord page go to blugold.group/discord for us to replace with whatever link we need at the time
+- Upgrade and prioritize blog
+- Add docs and ctf site
+- Make look better
+- add merch site and instagram and blugold connect
+- add achievements/bragging section
