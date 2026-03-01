@@ -1,0 +1,230 @@
+/* ============================================
+   BASE STYLES - Blugold Group
+   ============================================ */
+
+/* CSS Variables */
+:root {
+    --primary: #003366;
+    --primary-light: #004080;
+    --accent: #0077cc;
+    --text: #333333;
+    --text-light: #666666;
+    --bg: #ffffff;
+    --bg-alt: #f5f5f5;
+    --border: #dddddd;
+    --max-width: 1200px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --radius: 4px;
+}
+
+/* Reset & Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius);
+}
+
+nav a:hover {
+    color: var(--accent);
+    background: var(--bg-alt);
+}
+
+/* Logo link - remove hover background */
+nav ul:first-child a {
+    padding: 0;
+    background: transparent;
+}
+
+nav ul:first-child a:hover {
+    background: transparent;
+}
+
+/* Logo image sizing */
+nav img {
+    height: auto;
+    max-height: 50px;
+    width: auto;
+    display: block;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+
+main {
+    flex: 1;
+}
+
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.3;
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+p {
+    margin-bottom: var(--spacing-md);
+}
+
+a {
+    color: var(--accent);
+}
+
+a:hover {
+    color: var(--primary);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+footer {
+    padding: var(--spacing-lg) var(--spacing-md);
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-light);
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+
+footer a {
+    color: var(--text-light);
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: var(--accent);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav ul {
+        width: 100%;
+        justify-content: center;
+    }
+
+    nav ul:first-child {
+        justify-content: center;
+    }
+
+    nav img {
+        max-height: 40px;
+    }
+
+    html {
+        font-size: 15px;
+    }
+
+    h1 { font-size: 1.875rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+}
+
+@media (max-width: 480px) {
+    nav ul {
+        gap: var(--spacing-xs);
+    }
+
+    nav a {
+        padding: var(--spacing-xs);
+        font-size: 0.875rem;
+    }
+
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+}

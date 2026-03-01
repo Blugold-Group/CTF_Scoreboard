@@ -1,0 +1,105 @@
+/* dashboard.css - Themed to match existing dark UI */
+
+:root {
+    --bg-dark: #01010a;
+    --bg-darker: #010111;
+    --accent: #39f;
+    --text-light: #e0e0ff;
+    --text-muted: #888;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    overflow-x: hidden;
+    padding: 0;
+    line-height: 1.6;
+}
+
+h1 {
+    font-size: 3em;
+    letter-spacing: 2px;
+    text-align: center;
+    color: var(--text-light);
+    margin: 30px 0;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(57, 153, 255, 0.3);
+}
+
+section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px 20px;
+    background-color: var(--bg-darker);
+    border: 1px solid #0d0d20;
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
+h2 {
+    color: var(--accent);
+    font-size: 28px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+p {
+    margin: 16px 0;
+    font-size: 18px;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #6bc2ff;
+    text-decoration: underline;
+}
+
+i {
+    font-style: italic;
+    color: var(--text-muted);
+    display: block;
+    margin: 16px 0;
+    padding: 10px 15px;
+    background-color: rgba(57, 153, 255, 0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+}
+
+b {
+    font-weight: bold;
+    color: var(--text-light);
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5em;
+    }
+
+    section {
+        margin: 10px auto;
+        padding: 20px 15px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    section p:nth-last-of-type(-n+5) {
+        font-size: 15px;
+    }
+}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, send_file
+from flask import Flask, render_template, send_from_directory, send_file, redirect
 import os
 from dotenv import load_dotenv
 
@@ -35,6 +35,14 @@ def dashboard():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/emailoptout')
+def emailoptout():
+    return render_template('emailoptout.html')
+
+@app.route('/discord')
+def discord():
+    return redirect("https://discord.gg/9WzM7DC7dY", code=302)
 
 @app.route('/resources')
 def resources():
