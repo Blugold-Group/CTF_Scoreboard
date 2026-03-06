@@ -8,7 +8,7 @@ Flask-Login==0.6.3
 idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.6
-Markdown==3.7
+Markdown==3.8.1
 MarkupSafe==3.0.2
 pyotp==2.9.0
 python-dotenv==1.1.1
