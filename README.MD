@@ -1,5 +1,8 @@
 # Blugold Group Website
 
+> [!CAUTION]  
+> 🚧 Website under construction. Overhaul in progress. See [TODO.md](TODO.md) 🏗️
+
 This website is the website for the Blugold Group, the cybersecurity club of the [University of Wisconsin - Eau Claire](https://www.uwec.edu/).
 
 It is not meant to be hosted on the open web, but rather on the cybersecurity lab network. It is hosted on the open web over the winterim 2024-2025 to provide access for members to a Winterim CTF

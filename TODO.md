@@ -1,6 +1,6 @@
 # Reed's Todo list for the website
 
-Just to keep me accountable for the things I need to get done.
+Just to keep me accountable for the things I need to get done. This rework of the site is still **under construction** and will be **rapidly evolving** for the forseable future. **The goal was to get a nicer looking website in time for the Cyphercon conference**. So, it's safe to say this was **a little rushed**. ;)
 
 ## Migrate from the old site design
 
