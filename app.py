@@ -36,17 +36,17 @@ def dashboard():
 def about():
     return render_template('about.html')
 
-@app.route('/emailoptout')
-def emailoptout():
-    return render_template('emailoptout.html')
+# @app.route('/emailoptout')
+# def emailoptout():
+#     return render_template('emailoptout.html')
 
 @app.route('/discord')
 def discord():
     return redirect("https://discord.gg/9WzM7DC7dY", code=302)
 
-@app.route('/resources')
-def resources():
-    return render_template('resources.html')
+# @app.route('/resources')
+# def resources():
+#     return render_template('resources.html')
 
 
 if __name__ == "__main__":
