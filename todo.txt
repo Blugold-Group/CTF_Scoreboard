@@ -1,5 +1,0 @@
-- Upgrade and prioritize blog
-- Add docs and ctf site
-- Make look better
-- add merch site and instagram and blugold connect
-- add achievements/bragging section

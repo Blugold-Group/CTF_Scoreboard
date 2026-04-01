@@ -44,6 +44,14 @@ def about():
 def discord():
     return redirect("https://discord.gg/9WzM7DC7dY", code=302)
 
+@app.route('/calendar')
+def calendar():
+    return redirect("https://outlook.office365.com/owa/calendar/a095948822b745e2a38b88d2198c9f63@uwec.edu/c37a0791f8c34c17a13f33cea666f5df14002655777961391635/calendar.html", code=302)
+
+@app.route('/github')
+def github():
+    return redirect("https://github.com/Blugold-Group", code=302)
+
 # @app.route('/resources')
 # def resources():
 #     return render_template('resources.html')

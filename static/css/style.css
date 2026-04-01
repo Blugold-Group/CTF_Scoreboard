@@ -1,0 +1,170 @@
+/* Refactor this later to split out specifics to different files */
+
+:root {
+    /* color scheme variables */
+    --background: rgb(28, 40, 59);
+    --foreground: rgb(39, 55, 80);
+    --border: rgb(66, 94, 133);
+    --text: rgb(255, 228, 196);
+}
+
+* {
+    color: var(--text);
+    font-family: "Source Code Pro", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+html {
+    background-color: var(--background);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding-top: 25px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+h1, h2 {
+    font-family: "Doto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
+
+button {
+    border: 3px solid var(--border);
+    background-color: var(--foreground);
+    transition-duration: 0.2s;
+    width: 22%;
+    min-width: 140px;
+    height: 40px;
+}
+
+button:hover {
+    background-color: var(--border);
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+footer > div {
+    margin: 0px 15px 0px 15px;
+}
+
+/* container defaults */
+body > div {
+    margin: auto;
+    background-color: var(--foreground);
+    border: 3px solid var(--border);
+    width: 100%;
+    max-width: 900px;
+}
+
+.invis-div {
+    border: none;
+    background: none;
+}
+
+.invis-div > div {
+    /* Parody body > div coloring */
+    background-color: var(--foreground);
+    border: 3px solid var(--border);
+} 
+
+/* Website Header */
+#website-header {
+    text-align: center;
+}
+
+#website-header > h1 {
+    margin: 15px auto 15px auto;
+}
+
+/* Buttons */
+#button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Fastfetch Thing */
+#fastfetch-thing {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+#logo {
+    width:300px;
+    height: 300px;
+}
+
+#right-panel {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: none;
+    justify-content: center;
+    gap: 14px;
+    padding: 30px;
+}
+.category-label {
+    color: rgb(205, 203, 203);
+}
+
+/* Projects */
+
+#projects-header {
+    text-align: center;
+}
+
+#projects-header > h2 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#projects {
+    display: grid;
+    grid-template-columns: 30% 30% 30%;
+    gap: 15px;
+    justify-content: center;
+}
+
+#projects > div {
+    padding: 30px 15px 30px 15px;
+}
+
+#projects > div > h2 {
+    margin-top: 0px;
+}
+
+@media (max-width: 700px) {
+    #fastfetch-thing {
+        grid-template-columns: auto;
+    }
+    #logo {
+        margin: auto;
+    }
+    #projects {
+        grid-template-columns: auto;
+    }
+    .footer-item-seperator {
+        display: none;
+    }
+}
+
+/* SPECIFIC TO ABOUT PAGE */
+
+.text-container {
+    margin: 15px;
+}

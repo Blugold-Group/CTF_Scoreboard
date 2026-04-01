@@ -1,50 +1,85 @@
-{% extends "base.html" %}
-{% block title %}About the Blugold Group{% endblock %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blugold Cybersecurity</title>
+    <!-- <favicon src="img/logo.webp"/> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+    <body>
+        <!-- Header -->
+        <div id="website-header">
+            <h1>Blugold Cybersecurity</h1>
+        </div>
+        <!-- Who We Are -->
+        <div>
+            <div class="text-container">
+                <h2>Who We Are</h2>
+                <p>The Blugold Group is a student-led organization at the University of Wisconsin-Eau Claire focused on cybersecurity education, and skills development. We bring together students from diverse backgrounds who are passionate about protecting digital infrastructure, securing personal data, and learning how to defend against cyber threats.</p>
+                <p>We meet at 6:00pm in Vicki Lord Larson 1132 (in the hallway connecting Schofield to the library) every Tuesday. Come down and join us!</p>
+            </div>
+        </div>
+        <!-- Our Mission -->
+        <div>
+            <div class="text-container">
+                <h2>Our Mission</h2>
+                <p>Our mission is to educate students in the realm of cybersecurity through hands on technical projects and community engagement. We strive to create an inclusive environment where members can enhance their skills, connect with industry experts, and make impactful contributions to the cybersecurity landscape. Recognizing the importance of a free internet, we participate in global efforts that improve the security, openness, and privacy of the internet.</p>
+            </div>
+        </div>
+        <!-- Members -->
+        <div>
+            <div class="text-container">
+                <h2>Board Members</h2>
+                <ul>
+                    <li>President: Jack Hagen</li>
+                    <li>Vice President: Jacob Stoltenburg</li>
+                    <li>Secretary: Owen Kromrey</li>
+                    <li>Treasurer: Alex Cooper</li>
+                    <li>Other Board Members:</li>
+                    <ul>
+                        <li>Hunter McDaniel</li>
+                        <li>Silas Eacret</li>
+                        <li>Reed Graf</li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div>
+            <footer>
+                <div>
+                    <span><a href="./about">About</a></span>
+                </div>
 
-{% block style %}
-  <link rel="stylesheet" href="/static/css/dashboard.css">
-{% endblock %}
+                <span class="footer-item-seperator">|</span>
 
+                <!-- <div>
+                    <span><a href="./join">Join</a></span>
+                </div>
 
-<h1 style="text-align: center; font-size: 60px;">The Blugold Group</h1>
+                <span class="footer-item-seperator">|</span> -->
 
-<p>To see a list of our members, click <a href="/members">here</a></p>
+                <div>
+                    <span><a href="./discord">Discord</a></span>
+                </div>
 
+                <span class="footer-item-seperator">|</span>
 
-<section>
-  <h2>Who We Are</h2>
-  <p>The Blugold Group is a student-led organization at the University of Wisconsin-Eau Claire focused on cybersecurity education, and skills development. We bring together students from diverse backgrounds who are passionate about protecting digital infrastructure, securing personal data, and learning how to defend against cyber threats.</p>
-</section>
+                <div>
+                    <span><a href="./github">GitHub</a></span>
+                </div>
 
-<section>
-  <p>We meet at 6:00pm in Vicki Lord Larson 1132 (in the hallway connecting Schofield to the library) every Tuesday. Come down and join us!</p>
-</section>
+                <span class="footer-item-seperator">|</span>
 
-<section>
-  <h2>Our Mission</h2>
-  <p>Our mission is to educate students in the realm of cybersecurity through hands on technical projects and community engagement. We strive to create an inclusive environment where members can enhance their skills, connect with industry experts, and make impactful contributions to the cybersecurity landscape. Recognizing the importance of a free internet, we participate in global efforts that improve the security, openness, and privacy of the internet.</p>
-</section>
-
-<section>
-  <h2>How We Do It</h2>
-  <ul>
-    <li><b>Workshops:</b> Regularly scheduled sessions on topics like ethical hacking, penetration testing, and network security.</li>
-    <li><b>Capture the Flag (CTF):</b> Cybersecurity challenges that simulate real-world security incidents.</li>
-    <li><b>Guest Speakers:</b> Hear from industry leaders and professionals in the cybersecurity field.</li>
-    <li><b>Competitions:</b> Compete in regional and national cybersecurity competitions.</li>
-  </ul>
-</section>
-
-<!--
-<section>
-  <h2>Points of Pride</h2>
-  <ul>
-    <li><b>Won this thing:</b> Regularly scheduled sessions on topics like ethical hacking, penetration testing, and network security.</li>
-    <li><b>DId this other thing:</b> Cybersecurity challenges that simulate real-world security incidents.</li>
-  </ul>
-</section>
--->
-
-<img src=/static/images/logo.png alt="Logo for SEO and logo recognition in search engines">
-{% endblock %}
+                <div>
+                    <span><a href="./calendar">Calendar</a></span>
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>
