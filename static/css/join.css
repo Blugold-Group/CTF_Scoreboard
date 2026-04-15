@@ -1,0 +1,20 @@
+/* ===================
+    Join Page Styling
+   =================== */
+
+#faq-header {
+    text-align: center;
+}
+
+#faq-item-container {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: auto auto auto;
+
+}
+
+@media (max-width: 700px) {
+    #faq-item-container {
+        grid-template-columns: auto;
+    }
+}

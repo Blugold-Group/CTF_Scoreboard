@@ -1,0 +1,64 @@
+/* ==================
+    Homepage Styling
+   ================== */
+
+/* Fastfetch Thing */
+#fastfetch-thing {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+#logo {
+    width:300px;
+    height: 300px;
+}
+
+#right-panel {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: none;
+    justify-content: center;
+    gap: 14px;
+    padding: 30px;
+}
+.category-label {
+    color: rgb(205, 203, 203);
+}
+
+/* Projects */
+
+#projects-header {
+    text-align: center;
+}
+
+#projects-header > h2 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#projects {
+    display: grid;
+    grid-template-columns: 30% 30% 30%;
+    gap: 15px;
+    justify-content: center;
+}
+
+#projects > div {
+    padding: 30px 15px 30px 15px;
+}
+
+#projects > div > h2 {
+    margin-top: 0px;
+}
+
+@media (max-width: 700px) {
+    #fastfetch-thing {
+        grid-template-columns: auto;
+    }
+    #logo {
+        margin: auto;
+    }
+    #projects {
+        grid-template-columns: auto;
+    }
+}

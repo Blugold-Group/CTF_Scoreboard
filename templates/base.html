@@ -3,32 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.25.4/dist/css/uikit.min.css" />
-    <link rel="stylesheet" href="/static/css/cards.css">
+    <title>{% block title %}{% endblock %} | Blugold Cybersecurity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/base.css">
-    <title>{% block title %}Blugold Group{% endblock %}</title>
     {% block style %}{% endblock %}
 </head>
-<body>
-    <main>
-        <nav>
-            <ul>
-                <li><a href="/"><img src="/static/images/logo_with_words.png" alt="Blugold Group Logo"></a></li>
-            </ul>
-            <ul>
-                <li><a href="/discord">Discord</a></li>
-                <li><a href="https://github.com/Blugold-Group">Github</a></li>
-                <li><a href="https://outlook.office365.com/owa/calendar/a095948822b745e2a38b88d2198c9f63@uwec.edu/c37a0791f8c34c17a13f33cea666f5df14002655777961391635/calendar.html">Calendar</a></li>
-                <li><a href="/about">About</a></li>
-            </ul>
-        </nav>
-        {% block content %}
-        {% endblock %}
+    <body>
+        <!-- Header -->
+        <div id="website-header">
+            <h1>Blugold Cybersecurity</h1>
+        </div>
+        <!-- Navigation Menu -->
+        <div id="button-container" class="invis-div">
+            <button><a href="/">Home</a></button>
+            <button><a href="/about">About Us</a></button>
+            <button><a href="./join">Join Our Club</a></button>
+            <button><a href="/calendar" target="_blank">Meeting Calendar</a></button>
+            <button><a href="/discord" target="_blank">Join the Discord</a></button>
+        </div>
 
-    <footer style="padding:20px; text-align:center; font-size:0.9em; color:#888;">
-        The Blugold Group | <a href="https://uwec.edu">University of Wisconsin - Eau Claire</a>
-    </footer>
+        {% block content %}{% endblock %}
 
-    </main>
-</body>
+        <!-- Footer -->
+        <div>
+            <footer>
+                <div>
+                    <span><a href="./about">About</a></span>
+                </div>
+
+                <span class="footer-item-seperator">|</span>
+
+                <div>
+                    <span><a href="./discord">Discord</a></span>
+                </div>
+
+                <span class="footer-item-seperator">|</span>
+
+                <div>
+                    <span><a href="./github">GitHub</a></span>
+                </div>
+                
+                <span class="footer-item-seperator">|</span>
+
+                <div>
+                    <span><a href="mailto:cyberclub@uwec.edu">Email</a></span>
+                </div>
+            </footer>
+        </div>
+    </body>
 </html>

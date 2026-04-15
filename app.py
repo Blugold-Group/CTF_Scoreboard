@@ -29,16 +29,16 @@ def robots_txt():
 @app.route("/")
 def dashboard():
 
-    return render_template("index.html")
+    return render_template("home.html")
 
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-# @app.route('/emailoptout')
-# def emailoptout():
-#     return render_template('emailoptout.html')
+@app.route('/join')
+def join():
+    return render_template('join.html')
 
 @app.route('/discord')
 def discord():

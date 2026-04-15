@@ -1,85 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blugold Cybersecurity</title>
-    <!-- <favicon src="img/logo.webp"/> -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-    <body>
-        <!-- Header -->
-        <div id="website-header">
-            <h1>Blugold Cybersecurity</h1>
-        </div>
-        <!-- Who We Are -->
-        <div>
-            <div class="text-container">
-                <h2>Who We Are</h2>
-                <p>The Blugold Group is a student-led organization at the University of Wisconsin-Eau Claire focused on cybersecurity education, and skills development. We bring together students from diverse backgrounds who are passionate about protecting digital infrastructure, securing personal data, and learning how to defend against cyber threats.</p>
-                <p>We meet at 6:00pm in Vicki Lord Larson 1132 (in the hallway connecting Schofield to the library) every Tuesday. Come down and join us!</p>
-            </div>
-        </div>
-        <!-- Our Mission -->
-        <div>
-            <div class="text-container">
-                <h2>Our Mission</h2>
-                <p>Our mission is to educate students in the realm of cybersecurity through hands on technical projects and community engagement. We strive to create an inclusive environment where members can enhance their skills, connect with industry experts, and make impactful contributions to the cybersecurity landscape. Recognizing the importance of a free internet, we participate in global efforts that improve the security, openness, and privacy of the internet.</p>
-            </div>
-        </div>
-        <!-- Members -->
-        <div>
-            <div class="text-container">
-                <h2>Board Members</h2>
-                <ul>
-                    <li>President: Jack Hagen</li>
-                    <li>Vice President: Jacob Stoltenburg</li>
-                    <li>Secretary: Owen Kromrey</li>
-                    <li>Treasurer: Alex Cooper</li>
-                    <li>Other Board Members:</li>
-                    <ul>
-                        <li>Hunter McDaniel</li>
-                        <li>Silas Eacret</li>
-                        <li>Reed Graf</li>
-                    </ul>
-                </ul>
-            </div>
-        </div>
-        <!-- Footer -->
-        <div>
-            <footer>
-                <div>
-                    <span><a href="./about">About</a></span>
-                </div>
-
-                <span class="footer-item-seperator">|</span>
-
-                <!-- <div>
-                    <span><a href="./join">Join</a></span>
-                </div>
-
-                <span class="footer-item-seperator">|</span> -->
-
-                <div>
-                    <span><a href="./discord">Discord</a></span>
-                </div>
-
-                <span class="footer-item-seperator">|</span>
-
-                <div>
-                    <span><a href="./github">GitHub</a></span>
-                </div>
-
-                <span class="footer-item-seperator">|</span>
-
-                <div>
-                    <span><a href="./calendar">Calendar</a></span>
-                </div>
-            </footer>
-        </div>
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block style %}<link rel="stylesheet" href="/static/css/about.css">{% endblock %}
+{% block content %}
+<!-- Who We Are -->
+<div>
+    <div class="text-container">
+        <h2>Who We Are</h2>
+        <p>The Blugold Group is a student-led organization at the University of Wisconsin-Eau Claire focused on cybersecurity education, and skills development. We bring together students from diverse backgrounds who are passionate about protecting digital infrastructure, securing personal data, and learning how to defend against cyber threats.</p>
+        <p>We meet at 6:00pm in Vicki Lord Larson 1132 (in the hallway connecting Schofield to the library) every Tuesday. Come down and join us!</p>
+    </div>
+</div>
+<!-- Our Mission -->
+<div>
+    <div class="text-container">
+        <h2>Our Mission</h2>
+        <p>Our mission is to educate students in the realm of cybersecurity through hands on technical projects and community engagement. We strive to create an inclusive environment where members can enhance their skills, connect with industry experts, and make impactful contributions to the cybersecurity landscape. Recognizing the importance of a free internet, we participate in global efforts that improve the security, openness, and privacy of the internet.</p>
+    </div>
+</div>
+<!-- Members -->
+<div id="members-header">
+    <h2>Board Members</h2>
+</div>
+<div id="members-container" class="invis-div">
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/jack.jpg">
+        <h3>Jack Hagen</h3>
+        <h3>President</h3>
+    </div>
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/jacob.jpg">
+        <h3>Jacob Stoltenburg</h3>
+        <h3>Vice-President</h3>
+    </div>
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/owen.jpg">
+        <h3>Owen Kromrey</h3>
+        <h3>Secretary</h3>
+    </div>
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/alex.jpg">
+        <h3>Alex Cooper</h3>
+        <h3>Treasurer</h3>
+    </div>
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/hunter.jpg">
+        <h3>Hunter McDaniel</h3>
+        <h3>Competition Officer</h3>
+    </div>
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/silas.jpg">
+        <h3>Silas Eacret</h3>
+        <h3>Development Officer</h3>
+    </div>
+    <div class="board-member">
+        <img class="member-photo" src="/static/images/board-members/reed.jpg">
+        <h3>Reed Graf</h3>
+        <h3>Technical Officer</h3>
+    </div>
+</div>
+{% endblock %}
