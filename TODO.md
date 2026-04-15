@@ -4,7 +4,7 @@ Just to keep me accountable for the things I need to get done. This rework of th
 
 ## Migrate from the old site design
 
-- [ ] Add "How we do it" section to about page
+- [x] Add "How we do it" section to about page (added to join page instead)
   - ```
     Workshops: Regularly scheduled sessions on topics like ethical hacking, penetration testing, and network security.
     Capture the Flag (CTF): Cybersecurity challenges that simulate real-world security incidents.
@@ -15,7 +15,7 @@ Just to keep me accountable for the things I need to get done. This rework of th
   - `https://outlook.office365.com/owa/calendar/a095948822b745e2a38b88d2198c9f63@uwec.edu/c37a0791f8c34c17a13f33cea666f5df14002655777961391635/calendar.html`
 - [x] GitHub:
   - `https://github.com/Blugold-Group`
-- [ ] FAQ Section
+- [x] FAQ Section
   - Do I need prior experience to join?
     - No! We welcome all skill levels. Workshops start with basics and build up.
   - Is membership free?
@@ -27,10 +27,13 @@ Just to keep me accountable for the things I need to get done. This rework of th
 
 - [ ] Add future docs site to nav bar
 - [ ] Add a contact page
+- [ ] Link UWEC on home page
+- [ ] Progress on projects
 
 ## Legacy TODO Items
 
-- Upgrade and prioritize blog
+- [x] Upgrade and prioritize blog
+  - Moved to Docs?
 - Add docs and ctf site
 - Make look better
 - add merch site and instagram and blugold connect
